@@ -1,10 +1,10 @@
 # ELLP - Sistema de Registro de Presença
 
-## Descrição
+## 📜 Descrição
 
 Este projeto visa desenvolver um sistema web para o registro de presença nas oficinas do projeto de extensão ELLP (Ensino Lúdico de Lógica e Programação) da UTFPR. O sistema permitirá o cadastro de oficinas e alunos, o registro eficiente da presença e a geração de relatórios de frequência, otimizando a gestão das atividades do projeto.
 
-## Funcionalidades Principais
+## ⚙️ Funcionalidades Principais
 
 - **Cadastro de Oficinas:** Permite o cadastro detalhado de novas oficinas (nome, descrição, data, horário, responsáveis).
 - **Cadastro de Alunos:** Permite o cadastro de alunos participantes (nome, idade, escola, contato, associação à(s) oficina(s)).
@@ -13,7 +13,7 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 - **Geração de Relatórios:** Gera relatórios detalhados sobre a frequência dos alunos, exportáveis em PDF ou CSV.
 - **Autenticação de Usuários:** Possui autenticação para diferentes perfis (administrador e voluntário).
 
-## Requisitos Funcionais
+## 📝 Requisitos Funcionais
 
 | **ID**  | **Requisito Funcional**                                         | **Descrição**                                                                                                                                      |
 |---------|------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -26,8 +26,7 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 | **RF7** | Controle de Acesso                                              | O sistema deve possuir autenticação de usuários, diferenciando perfis de administrador (gestão completa) e voluntário (registro de presença).       |
 | **RF8** | Visualização de Dados                                           | O sistema deve permitir que administradores visualizem listas de oficinas, alunos e presenças de forma organizada.                                   |
 
-
-## Arquitetura
+## 🏗️ Arquitetura
 
 O sistema será desenvolvido utilizando a seguinte arquitetura:
 
@@ -36,11 +35,11 @@ O sistema será desenvolvido utilizando a seguinte arquitetura:
 - **Banco de Dados:** PostgreSQL com Prisma ORM (armazenamento dos dados)
 - **Autenticação:** Firebase Auth (gerenciamento de usuários e autenticação)
 
-## Diagrama de Arquitetura
+## 📊 Diagrama de Arquitetura
 
 ![Diagrama de Arquitetura](diagramas/diagramaArquitetura.png)
 
-## Tecnologias Utilizadas
+## 🧰 Tecnologias Utilizadas
 
 - Vue.js
 - Node.js
@@ -51,12 +50,43 @@ O sistema será desenvolvido utilizando a seguinte arquitetura:
 - Git
 - GitHub
 
-## Metodologia
+## 🏅 Metodologia
 
 O desenvolvimento do projeto seguirá a metodologia Scrum, com sprints focados na entrega iterativa de funcionalidades. A gestão de tarefas será realizada através de um Kanban.
 
-## Próximos Passos
+## 🚀 Próximos Passos
 
 1.  Definição detalhada dos requisitos funcionais.
 2.  Implementação da estrutura inicial do backend com Node.js e Express.js.
 3.  Criação dos modelos de dados com Prisma ORM para o banco de dados PostgreSQL.
+
+## 🤝 Colaboradores
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Kio-Suzuki">
+        <img src="https://avatars.githubusercontent.com/u/116661015?v=4" width="100px;" alt="Akio Suzuki Profile Picture"/><br>
+        <sub>
+          <b>Akio Suzuki</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/pedrohcmoda">
+        <img src="https://avatars.githubusercontent.com/u/100807308?v=4" width="100px;" alt="Pedro Moda Profile Picture"/><br>
+        <sub>
+          <b>Pedro Moda</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/kauanbrt">
+        <img src="https://avatars.githubusercontent.com/u/78911423?v=4" width="100px;" alt="Kauan Borotto Profile Picture"/><br>
+        <sub>
+          <b>Kauan Borotto</b>
+        </sub>
+      </a>
+    </td>
+  </tr>
+</table>
