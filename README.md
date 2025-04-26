@@ -26,7 +26,7 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 | **RF7** | Controle de Acesso                                              | O sistema deve possuir autenticação de usuários, diferenciando perfis de administrador (gestão completa) e voluntário (registro de presença).       |
 | **RF8** | Visualização de Dados                                           | O sistema deve permitir que administradores visualizem listas de oficinas, alunos e presenças de forma organizada.                                   |
 
-## 🏗️ Arquitetura
+## 🗃️ Arquitetura
 
 O sistema será desenvolvido utilizando a seguinte arquitetura:
 
@@ -37,7 +37,7 @@ O sistema será desenvolvido utilizando a seguinte arquitetura:
 
 ## 📊 Diagrama de Arquitetura
 
-![Diagrama de Arquitetura](diagramas/diagramaArquitetura.png)
+![Diagrama de Arquitetura](diagramaArquitetura.png)
 
 ## 🧰 Tecnologias Utilizadas
 
