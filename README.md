@@ -54,6 +54,10 @@ O sistema será desenvolvido utilizando a seguinte arquitetura:
 
 O desenvolvimento do projeto seguirá a metodologia Scrum, com sprints focados na entrega iterativa de funcionalidades. A gestão de tarefas será realizada através de um Kanban.
 
+## ⚠️ Observações
+
+Alguns possíveis erros possuem correções no README do front ou back, dependendo do erro.
+
 ## 🚀 Próximos Passos
 
 1.  Definição detalhada dos requisitos funcionais.
