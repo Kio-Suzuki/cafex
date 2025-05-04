@@ -22,9 +22,8 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 | **RF3** | Registro de Presença                                             | O sistema deve permitir o registro da presença dos alunos em cada oficina realizada, de forma rápida e segura.                                     |
 | **RF4** | Consulta de Presença                                            | O sistema deve permitir a consulta das presenças registradas, filtrando por aluno, oficina e período.                                                |
 | **RF5** | Edição e Exclusão de Registros                                   | O sistema deve permitir a edição e exclusão de cadastros de oficinas, alunos e presenças, respeitando restrições de integridade.                    |
-| **RF6** | Geração de Relatórios de Frequência                              | O sistema deve gerar relatórios detalhados sobre a frequência dos alunos, exportáveis em PDF ou planilha.                                            |
-| **RF7** | Controle de Acesso                                              | O sistema deve possuir autenticação de usuários, diferenciando perfis de administrador (gestão completa) e voluntário (registro de presença).       |
-| **RF8** | Visualização de Dados                                           | O sistema deve permitir que administradores visualizem listas de oficinas, alunos e presenças de forma organizada.                                   |
+| **RF6** | Controle de Acesso                                              | O sistema deve possuir autenticação de usuários, diferenciando perfis de administrador (gestão completa) e voluntário (registro de presença).       |
+| **RF7** | Visualização de Dados                                           | O sistema deve permitir que administradores visualizem listas de oficinas, alunos e presenças de forma organizada.                                   |
 
 ## 🗃️ Arquitetura
 
