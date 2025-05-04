@@ -1,15 +1,15 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
-import testeRouter from './routes/testeRouter.js';
+import testeRouter from "./routes/testeRouter.js";
 
-dotenv.config({path: './.env'});
+dotenv.config({ path: "./.env" });
 
 const app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:5173'
+  origin: ["http://localhost:5173", "http://localhost:4173"],
 };
 
 app.use(express.json());
