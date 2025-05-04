@@ -1,17 +1,25 @@
 <template>
   <main>
-    <Botao :funcao="handleClick" :label="label" />
+    <Botao :onClick="handleClick" :titulo="label" />
   </main>
 </template>
 
 <script setup>
 import Botao from './components/Botao.vue'
+import axios from 'axios'
 
 const handleClick = () => {
-  console.log('Clicou no botão')
+  axios
+    .get('http://localhost:3334/txtBotao')
+    .then((response) => {
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar dados da API:', error)
+    })
 }
 
-const label = 'Clique aqui'
+const label = "Clique aqui"
 </script>
 
 <style scoped>

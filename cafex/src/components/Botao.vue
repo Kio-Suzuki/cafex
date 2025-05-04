@@ -1,17 +1,13 @@
 <template>
-  <button @click="funcao">{{ label }}</button>
+  <button @click="onClick">{{ titulo }}</button>
 </template>
 
 <script>
 export default {
   name: 'Botao',
   props: {
-    label: {
+    titulo: {
       type: String,
-      required: true,
-    },
-    funcao: {
-      type: Function,
       required: true,
     },
   },
