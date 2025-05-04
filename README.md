@@ -10,7 +10,6 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 - **Cadastro de Alunos:** Permite o cadastro de alunos participantes (nome, idade, escola, contato, associação à(s) oficina(s)).
 - **Registro de Presença:** Permite o registro rápido e seguro da presença dos alunos em cada oficina.
 - **Consulta de Presença:** Permite a consulta das presenças registradas, com filtros por aluno, oficina e período.
-- **Geração de Relatórios:** Gera relatórios detalhados sobre a frequência dos alunos, exportáveis em PDF ou CSV.
 - **Autenticação de Usuários:** Possui autenticação para diferentes perfis (administrador e voluntário).
 
 ## 📝 Requisitos Funcionais
