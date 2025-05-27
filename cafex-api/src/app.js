@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import oficinaRouter from "./routes/oficinaRouter.js";
-import errorHandler from "./middlewares/errorHandler.js";
+import generalErrorHandler from "./middlewares/generalErrorHandler.js";
 
 dotenv.config({ path: "./.env" });
 
@@ -21,5 +21,6 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'API CafeX (ELLP) está funcionando!' });
 });
 
+app.use(generalErrorHandler);
 
 export default app;
