@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import oficinaRouter from "./routes/oficinaRouter.js";
+import presencaRouter from "./routes/presencaRouter.js";
+
 import generalErrorHandler from "./middlewares/generalErrorHandler.js";
 
 dotenv.config({ path: "./.env" });
@@ -16,6 +18,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/api', oficinaRouter);
+app.use('/api', presencaRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'API CafeX (ELLP) está funcionando!' });
