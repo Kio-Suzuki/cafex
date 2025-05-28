@@ -1,5 +1,6 @@
 import PresencaModel from '../models/presencaModel.js';
 import OficinaModel from '../models/oficinaModel.js';
+import AlunoModel from '../models/AlunoModel.js';
 
 import { logError } from '../utils/logger.js';
 
@@ -38,10 +39,10 @@ class PresencaService {
             }
 
             //Valida existencia do aluno
-            // const aluno = await AlunoModel.getById(data.alunoId);
-            // if (!aluno) {
-            //     throw new Error('Aluno não encontrado.');
-            // }
+            const aluno = await AlunoModel.getById(data.alunoId);
+            if (!aluno) {
+                throw new Error('Aluno não encontrado.');
+            }
 
             return await PresencaModel.create(data);
         } catch (err) {
