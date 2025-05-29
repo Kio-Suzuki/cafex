@@ -5,8 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // descomente a linha abaixo para usar a conexao direta com o banco de dados, permitindo o uso de migrations
-//  url      = env("DIRECT_URL")
+  // url      = env("DIRECT_URL")
 }
 
 enum StatusPresenca {
@@ -16,18 +15,27 @@ enum StatusPresenca {
 }
 
 model Oficina {
-  id           String     @id @default(cuid())
+  id           Int           @id @default(autoincrement())
   nome         String
   descricao    String?
-  dataHorario  DateTime
-  responsaveis String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  horarioInicio DateTime
+  horarioFim   DateTime
+  responsaveis Responsavel[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   presencas    Presenca[]
 }
 
+model Responsavel {
+  id                   Int       @id @default(autoincrement())
+  nomeResponsavel      String
+  registroResponsavel  String    @unique
+  senha                String
+  oficinas             Oficina[]
+}
+
 model Aluno {
-  ra        String     @id @default(cuid())
+  ra        String     @id
   nome      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -35,7 +43,7 @@ model Aluno {
 }
 
 model Presenca {
-  id           String         @id @default(cuid())
+  id           Int            @id @default(autoincrement())
   dataPresenca DateTime
   status       StatusPresenca
   observacoes  String?
@@ -43,7 +51,7 @@ model Presenca {
   alunoId String
   aluno   Aluno  @relation(fields: [alunoId], references: [ra], onDelete: Cascade)
 
-  oficinaId String
+  oficinaId Int
   oficina   Oficina @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
