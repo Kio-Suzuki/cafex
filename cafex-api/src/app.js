@@ -18,12 +18,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/api', oficinaRouter);
-app.use('/api', presencaRouter);
-app.use('/api', alunoRouter);
+app.use("/api", oficinaRouter);
+app.use("/api", presencaRouter);
+app.use("/api", alunoRouter);
 
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'API CafeX (ELLP) está funcionando!' });
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "API CafeX (ELLP) está funcionando!" });
 });
 
 app.use(generalErrorHandler);

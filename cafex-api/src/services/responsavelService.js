@@ -1,4 +1,4 @@
-import ResponsavelModel from '../models/responsavelModel.js';
+import ResponsavelModel from "../models/responsavelModel.js";
 
 class ResponsavelService {
   static async create(data) {
