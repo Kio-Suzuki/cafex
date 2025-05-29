@@ -1,4 +1,4 @@
-import ResponsavelService from '../services/responsavelService.js';
+import ResponsavelService from "../services/responsavelService.js";
 
 class ResponsavelController {
   static async create(req, res, next) {
@@ -21,8 +21,11 @@ class ResponsavelController {
 
   static async getById(req, res, next) {
     try {
-      const responsavel = await ResponsavelService.getById(Number(req.params.id));
-      if (!responsavel) return res.status(404).json({ message: 'Responsável não encontrado' });
+      const responsavel = await ResponsavelService.getById(
+        Number(req.params.id)
+      );
+      if (!responsavel)
+        return res.status(404).json({ message: "Responsável não encontrado" });
       res.json(responsavel);
     } catch (err) {
       next(err);
@@ -31,7 +34,10 @@ class ResponsavelController {
 
   static async update(req, res, next) {
     try {
-      const responsavel = await ResponsavelService.update(Number(req.params.id), req.body);
+      const responsavel = await ResponsavelService.update(
+        Number(req.params.id),
+        req.body
+      );
       res.json(responsavel);
     } catch (err) {
       next(err);

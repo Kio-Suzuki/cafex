@@ -15,27 +15,27 @@ enum StatusPresenca {
 }
 
 model Oficina {
-  id           Int           @id @default(autoincrement())
-  nome         String
-  descricao    String?
+  id            Int           @id @default(autoincrement())
+  nome          String
+  descricao     String?
   horarioInicio DateTime
-  horarioFim   DateTime
-  responsaveis Responsavel[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  presencas    Presenca[]
+  horarioFim    DateTime
+  responsaveis  Responsavel[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  presencas     Presenca[]
 }
 
 model Responsavel {
-  id                   Int       @id @default(autoincrement())
-  nomeResponsavel      String
-  registroResponsavel  String    @unique
-  senha                String
-  oficinas             Oficina[]
+  id                  Int       @id @default(autoincrement())
+  nomeResponsavel     String
+  registroResponsavel String    @unique
+  senha               String
+  oficinas            Oficina[]
 }
 
 model Aluno {
-  ra        String     @id
+  ra        Int        @id
   nome      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -48,8 +48,8 @@ model Presenca {
   status       StatusPresenca
   observacoes  String?
 
-  alunoId String
-  aluno   Aluno  @relation(fields: [alunoId], references: [ra], onDelete: Cascade)
+  alunoRa Int
+  aluno   Aluno @relation(fields: [alunoRa], references: [ra], onDelete: Cascade)
 
   oficinaId Int
   oficina   Oficina @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
@@ -57,7 +57,7 @@ model Presenca {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([alunoId, oficinaId, dataPresenca])
-  @@index([alunoId])
+  @@unique([alunoRa, oficinaId, dataPresenca])
+  @@index([alunoRa])
   @@index([oficinaId])
 }
