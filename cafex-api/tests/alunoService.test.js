@@ -1,9 +1,22 @@
-import AlunoService from "../src/services/alunoService.js";
-import AlunoModel from "../src/models/AlunoModel.js";
-import { logError } from "../src/logs/logError.js";
+import { jest } from '@jest/globals';
 
-jest.mock("../src/models/AlunoModel.js");
-jest.mock("../src/logs/logError.js");
+await jest.unstable_mockModule("../src/models/alunoModel.js", () => ({
+  default: {
+    create: jest.fn(),
+    getAll: jest.fn(),
+    getByRa: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule("../src/logs/logError.js", () => ({
+  default: jest.fn(),
+}));
+
+const { default: AlunoModel } = await import("../src/models/alunoModel.js");
+const logError = (await import("../src/logs/logError.js")).default;
+const { default: AlunoService } = await import("../src/services/alunoService.js");
 
 describe("AlunoService", () => {
   beforeEach(() => {

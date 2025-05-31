@@ -1,9 +1,22 @@
-import ResponsavelService from "../src/services/responsavelService.js";
-import ResponsavelModel from "../src/models/responsavelModel.js";
-import { logError } from "../src/logs/logError.js";
+import { jest } from '@jest/globals';
 
-jest.mock("../src/models/responsavelModel.js");
-jest.mock("../src/logs/logError.js");
+await jest.unstable_mockModule('../src/models/responsavelModel.js', () => ({
+  default: {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findById: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule('../src/logs/logError.js', () => ({
+  default: jest.fn(),
+}));
+
+const { default: ResponsavelModel } = await import('../src/models/responsavelModel.js');
+const logError = (await import('../src/logs/logError.js')).default;
+const { default: ResponsavelService } = await import('../src/services/responsavelService.js');
 
 describe("ResponsavelService", () => {
   beforeEach(() => {

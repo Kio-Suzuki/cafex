@@ -1,4 +1,4 @@
-import AlunoService from "../services/AlunoService.js";
+import AlunoService from "../services/alunoService.js";
 
 class AlunoController {
   static async createAluno(req, res, next) {

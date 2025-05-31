@@ -1,5 +1,5 @@
 import OficinaModel from "../models/oficinaModel.js";
-import { logError } from "../logs/logError.js";
+import logError from "../logs/logError.js";
 
 class OficinaService {
   static async createOficina(dadosDaOficina) {

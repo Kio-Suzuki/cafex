@@ -1,13 +1,36 @@
-import PresencaService from "../src/services/presencaService.js";
-import PresencaModel from "../src/models/presencaModel.js";
-import OficinaModel from "../src/models/oficinaModel.js";
-import AlunoModel from "../src/models/AlunoModel.js";
-import { logError } from "../src/logs/logError.js";
+import { jest } from '@jest/globals';
 
-jest.mock("../src/models/presencaModel.js");
-jest.mock("../src/models/oficinaModel.js");
-jest.mock("../src/models/AlunoModel.js");
-jest.mock("../src/logs/logError.js");
+await jest.unstable_mockModule('../src/models/presencaModel.js', () => ({
+  default: {
+    create: jest.fn(),
+    getAll: jest.fn(),
+    getById: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule('../src/models/oficinaModel.js', () => ({
+  default: {
+    getById: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule('../src/models/alunoModel.js', () => ({
+  default: {
+    getByRa: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule('../src/logs/logError.js', () => ({
+  default: jest.fn(),
+}));
+
+const { default: PresencaModel } = await import('../src/models/presencaModel.js');
+const { default: OficinaModel } = await import('../src/models/oficinaModel.js');
+const { default: AlunoModel } = await import('../src/models/alunoModel.js');
+const logError = (await import('../src/logs/logError.js')).default;
+const { default: PresencaService } = await import('../src/services/presencaService.js');
 
 describe("PresencaService", () => {
   beforeEach(() => {
@@ -20,9 +43,7 @@ describe("PresencaService", () => {
         dataPresenca: "2025-06-01",
         status: "presente",
         alunoRa: 123,
-        // falta oficinaId
       };
-
       expect(() => PresencaService.validateFields(data)).toThrow(
         'Campo obrigatório "oficinaId" não foi preenchido.'
       );
@@ -35,7 +56,6 @@ describe("PresencaService", () => {
         alunoRa: 123,
         oficinaId: 1,
       };
-
       expect(() => PresencaService.validateFields(data)).toThrow(
         'Formato de "dataPresenca" inválido.'
       );
@@ -48,7 +68,6 @@ describe("PresencaService", () => {
         alunoRa: 123,
         oficinaId: 1,
       };
-
       PresencaService.validateFields(data);
       expect(data.dataPresenca).toBeInstanceOf(Date);
     });
@@ -60,7 +79,6 @@ describe("PresencaService", () => {
         alunoRa: 123,
         oficinaId: 1,
       };
-
       expect(() => PresencaService.validateFields(data)).not.toThrow();
     });
   });
@@ -97,7 +115,6 @@ describe("PresencaService", () => {
 
     it("deve lançar erro se oficina não encontrada", async () => {
       OficinaModel.getById.mockResolvedValue(null);
-
       const data = {
         dataPresenca: "2025-06-01",
         status: "presente",
@@ -112,7 +129,6 @@ describe("PresencaService", () => {
     it("deve lançar erro se aluno não encontrado", async () => {
       OficinaModel.getById.mockResolvedValue({ id: 1 });
       AlunoModel.getByRa.mockResolvedValue(null);
-
       const data = {
         dataPresenca: "2025-06-01",
         status: "presente",
@@ -212,7 +228,11 @@ describe("PresencaService", () => {
       const dataParaAtualizar = { dataPresenca: "2025-06-01", status: "ausente" };
 
       PresencaModel.getById.mockResolvedValue(presencaExistente);
-      PresencaModel.update.mockResolvedValue({ ...presencaExistente, ...dataParaAtualizar, dataPresenca: new Date(dataParaAtualizar.dataPresenca) });
+      PresencaModel.update.mockResolvedValue({
+        ...presencaExistente,
+        ...dataParaAtualizar,
+        dataPresenca: new Date(dataParaAtualizar.dataPresenca),
+      });
 
       const result = await PresencaService.updatePresenca(1, dataParaAtualizar);
 
@@ -221,7 +241,11 @@ describe("PresencaService", () => {
         ...dataParaAtualizar,
         dataPresenca: new Date(dataParaAtualizar.dataPresenca),
       });
-      expect(result).toEqual({ ...presencaExistente, ...dataParaAtualizar, dataPresenca: new Date(dataParaAtualizar.dataPresenca) });
+      expect(result).toEqual({
+        ...presencaExistente,
+        ...dataParaAtualizar,
+        dataPresenca: new Date(dataParaAtualizar.dataPresenca),
+      });
     });
 
     it("deve lançar erro 404 se presença não encontrada para atualizar", async () => {
@@ -238,7 +262,9 @@ describe("PresencaService", () => {
       const presencaExistente = { id: 1 };
       PresencaModel.getById.mockResolvedValue(presencaExistente);
 
-      await expect(PresencaService.updatePresenca(1, { dataPresenca: "data-invalida" })).rejects.toMatchObject({
+      await expect(
+        PresencaService.updatePresenca(1, { dataPresenca: "data-invalida" })
+      ).rejects.toMatchObject({
         message: 'Formato de "dataPresenca" inválido.',
         statusCode: 400,
       });

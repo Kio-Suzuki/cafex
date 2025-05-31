@@ -1,9 +1,22 @@
-import OficinaService from "../src/services/oficinaService.js";
-import OficinaModel from "../src/models/oficinaModel.js";
-import { logError } from "../src/logs/logError.js";
+import { jest } from '@jest/globals';
 
-jest.mock("../src/models/oficinaModel.js");
-jest.mock("../src/logs/logError.js");
+await jest.unstable_mockModule('../src/models/oficinaModel.js', () => ({
+  default: {
+    create: jest.fn(),
+    getAll: jest.fn(),
+    getById: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+await jest.unstable_mockModule('../src/logs/logError.js', () => ({
+  default: jest.fn(),
+}));
+
+const { default: OficinaModel } = await import('../src/models/oficinaModel.js');
+const logError = (await import('../src/logs/logError.js')).default;
+const { default: OficinaService } = await import('../src/services/oficinaService.js');
 
 describe("OficinaService", () => {
   beforeEach(() => {
@@ -55,8 +68,7 @@ describe("OficinaService", () => {
       };
 
       await expect(OficinaService.createOficina(dados)).rejects.toMatchObject({
-        message:
-          'Os campos "nome", "horarioInicio" e "horarioFim" são obrigatórios.',
+        message: 'Os campos "nome", "horarioInicio" e "horarioFim" são obrigatórios.',
         statusCode: 400,
       });
       expect(logError).toHaveBeenCalled();

@@ -1,5 +1,5 @@
 import ResponsavelModel from "../models/responsavelModel.js";
-import { logError } from "../logs/logError.js";
+import logError from "../logs/logError.js";
 
 class ResponsavelService {
   static validateFields(data) {

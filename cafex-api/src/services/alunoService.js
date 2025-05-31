@@ -1,6 +1,6 @@
-import AlunoModel from "../models/AlunoModel.js";
+import AlunoModel from "../models/alunoModel.js";
 
-import { logError } from "../logs/logError.js";
+import logError from "../logs/logError.js";
 
 class AlunoService {
   static validateFields(data) {

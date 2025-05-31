@@ -1,8 +1,8 @@
 import PresencaModel from "../models/presencaModel.js";
 import OficinaModel from "../models/oficinaModel.js";
-import AlunoModel from "../models/AlunoModel.js";
+import AlunoModel from "../models/alunoModel.js";
 
-import { logError } from "../logs/logError.js";
+import logError from "../logs/logError.js";
 
 class PresencaService {
   static validateFields(data) {
