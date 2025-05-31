@@ -2,11 +2,11 @@ import PresencaModel from "../models/presencaModel.js";
 import OficinaModel from "../models/oficinaModel.js";
 import AlunoModel from "../models/AlunoModel.js";
 
-import { logError } from "../utils/logger.js";
+import { logError } from "../logs/logError.js";
 
 class PresencaService {
   static validateFields(data) {
-    const requiredFields = ["dataPresenca", "status", "alunoId", "oficinaId"];
+    const requiredFields = ["dataPresenca", "status", "alunoRa", "oficinaId"];
     for (const field of requiredFields) {
       if (!data[field]) {
         const error = new Error(
@@ -30,20 +30,16 @@ class PresencaService {
 
   static async createPresenca(data) {
     try {
-      //Valida campos obrigatorios
       this.validateFields(data);
 
-      //Valida existencia da oficina
-      const oficina = await OficinaModel.getById(data.oficinaId);
-      if (!oficina) {
-        throw new Error("Oficina não encontrada.");
-      }
+      data.alunoRa = parseInt(data.alunoRa);
+      data.oficinaId = parseInt(data.oficinaId);
 
-      //Valida existencia do aluno
-      const aluno = await AlunoModel.getByRa(data.alunoId);
-      if (!aluno) {
-        throw new Error("Aluno não encontrado.");
-      }
+      const oficina = await OficinaModel.getById(data.oficinaId);
+      if (!oficina) throw new Error("Oficina não encontrada.");
+
+      const aluno = await AlunoModel.getByRa(data.alunoRa);
+      if (!aluno) throw new Error("Aluno não encontrado.");
 
       return await PresencaModel.create(data);
     } catch (err) {
@@ -56,12 +52,12 @@ class PresencaService {
     try {
       const where = {};
 
-      if (filter.alunoId) {
-        where.alunoId = filter.alunoId;
+      if (filter.alunoRa) {
+        where.alunoRa = parseInt(filter.alunoRa);
       }
 
       if (filter.oficinaId) {
-        where.oficinaId = filter.oficinaId;
+        where.oficinaId = parseInt(filter.oficinaId);
       }
 
       if (filter.dataInicio || filter.dataFim) {
@@ -83,7 +79,7 @@ class PresencaService {
 
   static async getPresencaById(id) {
     try {
-      const presenca = await PresencaModel.getById(id);
+      const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
         const error = new Error("Presenca não encontrada.");
         error.statusCode = 404;
@@ -98,7 +94,7 @@ class PresencaService {
 
   static async updatePresenca(id, data) {
     try {
-      const presenca = await PresencaModel.getById(id);
+      const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
         const error = new Error("Presenca não encontrada para atualização.");
         error.statusCode = 404;
@@ -115,7 +111,7 @@ class PresencaService {
         data.dataPresenca = date;
       }
 
-      return await PresencaModel.update(id, data);
+      return await PresencaModel.update(parseInt(id), data);
     } catch (err) {
       logError(err);
       throw err;
@@ -124,13 +120,13 @@ class PresencaService {
 
   static async deletePresenca(id) {
     try {
-      const presenca = await PresencaModel.getById(id);
+      const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
         const error = new Error("Presenca não encontrada para exclusão.");
         error.statusCode = 404;
         throw error;
       }
-      return await PresencaModel.delete(id);
+      return await PresencaModel.delete(parseInt(id));
     } catch (err) {
       logError(err);
       throw err;

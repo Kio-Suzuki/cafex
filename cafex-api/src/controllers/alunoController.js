@@ -22,7 +22,7 @@ class AlunoController {
   static async getAlunoByRa(req, res, next) {
     try {
       const { ra } = req.params;
-      const aluno = await AlunoService.getAlunoByRa(ra);
+      const aluno = await AlunoService.getAlunoByRa(Number(ra));
       res.status(200).json(aluno);
     } catch (error) {
       next(error);
@@ -32,7 +32,7 @@ class AlunoController {
   static async updateAluno(req, res, next) {
     try {
       const { ra } = req.params;
-      const aluno = await AlunoService.updateAluno(ra, req.body);
+      const aluno = await AlunoService.updateAluno(Number(ra), req.body);
       res.status(200).json(aluno);
     } catch (error) {
       next(error);
@@ -42,7 +42,7 @@ class AlunoController {
   static async deleteAluno(req, res, next) {
     try {
       const { ra } = req.params;
-      await AlunoService.deleteAluno(ra);
+      await AlunoService.deleteAluno(Number(ra));
       res.status(204).send();
     } catch (error) {
       next(error);
