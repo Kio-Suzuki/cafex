@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // url      = env("DIRECT_URL")
+  //url      = env("DIRECT_URL")
 }
 
 enum StatusPresenca {
@@ -32,6 +32,8 @@ model Responsavel {
   registroResponsavel String    @unique
   senha               String
   oficinas            Oficina[]
+
+  Presenca Presenca[]
 }
 
 model Aluno {
@@ -54,10 +56,14 @@ model Presenca {
   oficinaId Int
   oficina   Oficina @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
 
+  responsavelId Int
+  responsavel   Responsavel @relation(fields: [responsavelId], references: [id], onDelete: Restrict)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([alunoRa, oficinaId, dataPresenca])
+  @@unique([alunoRa, oficinaId, dataPresenca, responsavelId])
   @@index([alunoRa])
   @@index([oficinaId])
+  @@index([responsavelId])
 }

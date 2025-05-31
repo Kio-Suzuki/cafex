@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "prod" : "jest && nodemon src/server.js", 
+    "prod": "jest && nodemon src/server.js",
     "test": "jest"
   },
   "author": "",
@@ -19,7 +19,9 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
-    "ts-jest": "^29.3.2"
+    "ts-jest": "^29.3.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
