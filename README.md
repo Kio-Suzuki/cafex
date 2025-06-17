@@ -7,7 +7,7 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 ## ⚙️ Funcionalidades Principais
 
 - **Cadastro de Oficinas:** Permite o cadastro detalhado de novas oficinas (nome, descrição, data, horário, responsáveis).
-- **Cadastro de Alunos:** Permite o cadastro de alunos participantes (nome, idade, escola, contato, associação à(s) oficina(s)).
+- **Cadastro de Alunos:** Permite o cadastro de alunos participantes (nome, RA, associação à(s) oficina(s)).
 - **Registro de Presença:** Permite o registro rápido e seguro da presença dos alunos em cada oficina.
 - **Consulta de Presença:** Permite a consulta das presenças registradas, com filtros por aluno, oficina e período.
 
