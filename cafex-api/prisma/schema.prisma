@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  //url      = env("DIRECT_URL")
+  provider    = "postgresql"
+  url         = env("DATABASE_URL")
+  directUrl   = env("DIRECT_URL")
 }
 
 enum StatusPresenca {
@@ -20,20 +20,9 @@ model Oficina {
   descricao     String?
   horarioInicio DateTime
   horarioFim    DateTime
-  responsaveis  Responsavel[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   presencas     Presenca[]
-}
-
-model Responsavel {
-  id                  Int       @id @default(autoincrement())
-  nomeResponsavel     String
-  registroResponsavel String    @unique
-  senha               String
-  oficinas            Oficina[]
-
-  Presenca Presenca[]
 }
 
 model Aluno {
@@ -56,14 +45,10 @@ model Presenca {
   oficinaId Int
   oficina   Oficina @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
 
-  responsavelId Int
-  responsavel   Responsavel @relation(fields: [responsavelId], references: [id], onDelete: Restrict)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([alunoRa, oficinaId, dataPresenca, responsavelId])
+  @@unique([alunoRa, oficinaId, dataPresenca])
   @@index([alunoRa])
   @@index([oficinaId])
-  @@index([responsavelId])
 }

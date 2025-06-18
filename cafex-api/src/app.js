@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import oficinaRouter from "./routes/oficinaRouter.js";
 import presencaRouter from "./routes/presencaRouter.js";
 import alunoRouter from "./routes/alunoRouter.js";
-import responsavelRouter from "./routes/responsavelRouter.js";
 
 import generalErrorHandler from "./middlewares/generalErrorHandler.js";
 
@@ -24,7 +23,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api", oficinaRouter);
 app.use("/api", presencaRouter);
-app.use("/api", responsavelRouter);
 app.use("/api", alunoRouter);
 
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
