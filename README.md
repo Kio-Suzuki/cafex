@@ -6,8 +6,8 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 
 ## ⚙️ Funcionalidades Principais
 
-- **Cadastro de Oficinas:** Permite o cadastro detalhado de novas oficinas (nome, descrição, data, horário, responsáveis).
-- **Cadastro de Alunos:** Permite o cadastro de alunos participantes (nome, RA, associação à(s) oficina(s)).
+- **Cadastro de Oficinas:** Permite o cadastro detalhado de novas oficinas (nome, descrição, data, horário).
+- **Cadastro de Alunos:** Permite o cadastro de alunos.
 - **Registro de Presença:** Permite o registro rápido e seguro da presença dos alunos em cada oficina.
 - **Consulta de Presença:** Permite a consulta das presenças registradas, com filtros por aluno, oficina e período.
 
@@ -15,8 +15,8 @@ Este projeto visa desenvolver um sistema web para o registro de presença nas of
 
 | **ID**  | **Requisito Funcional**                                         | **Descrição**                                                                                                                                      |
 |---------|------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **RF1** | Cadastro de Oficinas                                            | O sistema deve permitir o cadastro de novas oficinas, incluindo nome, descrição, data, horário e responsáveis.                                      |
-| **RF2** | Cadastro de Alunos                                              | O sistema deve permitir o cadastro de alunos participantes, com dados como nome, RA e associação à(s) oficina(s).              |
+| **RF1** | Cadastro de Oficinas                                            | O sistema deve permitir o cadastro de novas oficinas, incluindo nome, descrição, data, horário.                                      |
+| **RF2** | Cadastro de Alunos                                              | O sistema deve permitir o cadastro de alunos.              |
 | **RF3** | Registro de Presença                                             | O sistema deve permitir o registro da presença dos alunos em cada oficina realizada, de forma rápida e segura.                                     |
 | **RF4** | Consulta de Presença                                            | O sistema deve permitir a consulta das presenças registradas, filtrando por aluno, oficina e período.                                                |
 | **RF5** | Edição e Exclusão de Registros                                   | O sistema deve permitir a edição e exclusão de cadastros de oficinas, alunos e presenças, respeitando restrições de integridade.                    |
