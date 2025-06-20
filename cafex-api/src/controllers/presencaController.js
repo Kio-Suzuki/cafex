@@ -10,6 +10,15 @@ class PresencaController {
     }
   }
 
+  static async createMultiplePresenca(req, res, next) {
+    try {
+      const presencas = await PresencaService.createMultiplePresenca(req.body);
+      res.status(201).json(presencas);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async listAllPresencas(req, res, next) {
     try {
       const { alunoRa, oficinaId, dataInicio, dataFim } = req.query;
