@@ -193,6 +193,6 @@ presencaRouter.delete("/presencas/:id", PresencaController.deletePresenca);
  *       201:
  *         description: Presenças registradas
  */
-presencaRouter.post("/presencas/lote", PresencaController.createMultiplePresenca);
+presencaRouter.post("/presencas/multiplas", PresencaController.createMultiplePresenca);
 
 export default presencaRouter;

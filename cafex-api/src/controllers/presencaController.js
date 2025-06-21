@@ -12,8 +12,12 @@ class PresencaController {
 
   static async createMultiplePresenca(req, res, next) {
     try {
-      const presencas = await PresencaService.createMultiplePresenca(req.body);
-      res.status(201).json(presencas);
+      const { presencas } = req.body;
+      if (!Array.isArray(presencas)) {
+        return res.status(400).json({ status: "erro", message: "presencas wrong format (not array)" });
+      }
+      const result = await PresencaService.createMultiplePresenca(presencas);
+      res.status(201).json(result);
     } catch (error) {
       next(error);
     }

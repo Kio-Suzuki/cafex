@@ -24,7 +24,11 @@ class PresencaService {
         error.statusCode = 400;
         throw error;
       }
+      // Zera a hora para garantir unicidade por dia
+      date.setUTCHours(0, 0, 0, 0);
       data.dataPresenca = date;
+    } else if (data.dataPresenca instanceof Date) {
+      data.dataPresenca.setUTCHours(0, 0, 0, 0);
     }
   }
 
@@ -96,10 +100,17 @@ class PresencaService {
       if (filter.dataInicio || filter.dataFim) {
         where.dataPresenca = {};
         if (filter.dataInicio) {
-          where.dataPresenca.gte = new Date(filter.dataInicio);
+          const dataInicio = new Date(filter.dataInicio);
+          dataInicio.setUTCHours(0, 0, 0, 0);
+          where.dataPresenca.gte = dataInicio;
         }
         if (filter.dataFim) {
-          where.dataPresenca.lte = new Date(filter.dataFim);
+          const dataFim = new Date(filter.dataFim);
+          dataFim.setUTCHours(0, 0, 0, 0);
+          // Para incluir o dia inteiro, soma 1 dia e subtrai 1 ms
+          dataFim.setUTCDate(dataFim.getUTCDate() + 1);
+          dataFim.setUTCMilliseconds(dataFim.getUTCMilliseconds() - 1);
+          where.dataPresenca.lte = dataFim;
         }
       }
 
