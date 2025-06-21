@@ -24,7 +24,6 @@ class PresencaService {
         error.statusCode = 400;
         throw error;
       }
-      // Zera a hora para garantir unicidade por dia
       date.setUTCHours(0, 0, 0, 0);
       data.dataPresenca = date;
     } else if (data.dataPresenca instanceof Date) {
@@ -107,7 +106,6 @@ class PresencaService {
         if (filter.dataFim) {
           const dataFim = new Date(filter.dataFim);
           dataFim.setUTCHours(0, 0, 0, 0);
-          // Para incluir o dia inteiro, soma 1 dia e subtrai 1 ms
           dataFim.setUTCDate(dataFim.getUTCDate() + 1);
           dataFim.setUTCMilliseconds(dataFim.getUTCMilliseconds() - 1);
           where.dataPresenca.lte = dataFim;

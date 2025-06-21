@@ -6,9 +6,9 @@ import * as directives from 'vuetify/directives'
 import { VDateInput } from 'vuetify/labs/VDateInput'
 
 export default createVuetify({
-    components: {
-        ...components,
-        VDateInput,
-    },
-    directives,
+  components: {
+    ...components,
+    VDateInput,
+  },
+  directives,
 })

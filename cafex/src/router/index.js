@@ -27,7 +27,7 @@ const router = createRouter({
       name: 'consulta',
       component: ConsultaView,
     },
-  ]
+  ],
 })
 
 export default router
