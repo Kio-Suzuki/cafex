@@ -24,7 +24,10 @@ class PresencaService {
         error.statusCode = 400;
         throw error;
       }
+      date.setUTCHours(0, 0, 0, 0);
       data.dataPresenca = date;
+    } else if (data.dataPresenca instanceof Date) {
+      data.dataPresenca.setUTCHours(0, 0, 0, 0);
     }
   }
 
@@ -43,9 +46,42 @@ class PresencaService {
 
       return await PresencaModel.create(data);
     } catch (err) {
+      const isDuplicidade =
+        (err.code === "P2002" &&
+          err.meta &&
+          err.meta.target &&
+          err.meta.target.includes("alunoRa_oficinaId_dataPresenca")) ||
+        (typeof err.message === "string" &&
+          (err.message.includes("Unique constraint failed") ||
+            err.message.includes("alunoRa_oficinaId_dataPresenca") ||
+            err.message.includes("presença registrada")));
+      if (isDuplicidade) {
+        const error = new Error(
+          "Já existe uma presença registrada para este aluno, oficina e data."
+        );
+        error.statusCode = 409;
+        throw error;
+      }
       logError(err);
       throw err;
     }
+  }
+
+  static async createMultiplePresenca(presencas) {
+    const results = [];
+    for (const data of presencas) {
+      try {
+        await this.createPresenca(data);
+        results.push({ alunoRa: data.alunoRa, status: "ok" });
+      } catch (err) {
+        results.push({
+          alunoRa: data.alunoRa,
+          status: "erro",
+          message: err.message,
+        });
+      }
+    }
+    return results;
   }
 
   static async getAllPresencas(filter) {
@@ -63,10 +99,16 @@ class PresencaService {
       if (filter.dataInicio || filter.dataFim) {
         where.dataPresenca = {};
         if (filter.dataInicio) {
-          where.dataPresenca.gte = new Date(filter.dataInicio);
+          const dataInicio = new Date(filter.dataInicio);
+          dataInicio.setUTCHours(0, 0, 0, 0);
+          where.dataPresenca.gte = dataInicio;
         }
         if (filter.dataFim) {
-          where.dataPresenca.lte = new Date(filter.dataFim);
+          const dataFim = new Date(filter.dataFim);
+          dataFim.setUTCHours(0, 0, 0, 0);
+          dataFim.setUTCDate(dataFim.getUTCDate() + 1);
+          dataFim.setUTCMilliseconds(dataFim.getUTCMilliseconds() - 1);
+          where.dataPresenca.lte = dataFim;
         }
       }
 

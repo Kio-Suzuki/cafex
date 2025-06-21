@@ -156,4 +156,43 @@ presencaRouter.put("/presencas/:id", PresencaController.updatePresenca);
  */
 presencaRouter.delete("/presencas/:id", PresencaController.deletePresenca);
 
+/**
+ * @swagger
+ * /presencas/lote:
+ *   post:
+ *     summary: Registra presenças em lote
+ *     tags: [Presenca]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               presencas:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     dataPresenca:
+ *                       type: string
+ *                       format: date-time
+ *                     status:
+ *                       type: string
+ *                       enum: [PRESENTE, AUSENTE, JUSTIFICADO]
+ *                     observacoes:
+ *                       type: string
+ *                     alunoRa:
+ *                       type: integer
+ *                     oficinaId:
+ *                       type: integer
+ *                 minItems: 1
+ *             required:
+ *               - presencas
+ *     responses:
+ *       201:
+ *         description: Presenças registradas
+ */
+presencaRouter.post("/presencas/multiplas", PresencaController.createMultiplePresenca);
+
 export default presencaRouter;

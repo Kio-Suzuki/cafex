@@ -10,6 +10,19 @@ class PresencaController {
     }
   }
 
+  static async createMultiplePresenca(req, res, next) {
+    try {
+      const { presencas } = req.body;
+      if (!Array.isArray(presencas)) {
+        return res.status(400).json({ status: "erro", message: "presencas wrong format (not array)" });
+      }
+      const result = await PresencaService.createMultiplePresenca(presencas);
+      res.status(201).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async listAllPresencas(req, res, next) {
     try {
       const { alunoRa, oficinaId, dataInicio, dataFim } = req.query;

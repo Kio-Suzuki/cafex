@@ -1,11 +1,11 @@
-import './assets/main.css';
+import './assets/main.css'
 
-import { createApp } from 'vue';
+import { createApp } from 'vue'
 
-import App from './App.vue';
-import router from './router';
-import vuetify from './plugins/vuetify';
-import Toaster from "@meforma/vue-toaster";
+import App from './App.vue'
+import router from './router'
+import vuetify from './plugins/vuetify'
+import Toaster from '@meforma/vue-toaster'
 
 const app = createApp(App)
 

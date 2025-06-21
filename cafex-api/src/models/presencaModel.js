@@ -6,7 +6,13 @@ class PresencaModel {
   }
 
   static async getAll(where) {
-    return prisma.presenca.findMany({ where });
+    return prisma.presenca.findMany({
+      where,
+      include: {
+        aluno: true,
+        oficina: true,
+      },
+    });
   }
 
   static async getById(id) {
