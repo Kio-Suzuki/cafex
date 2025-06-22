@@ -100,6 +100,8 @@ export default {
         const found = this.presencasIniciais?.find((p) => p.ra === aluno.ra)
         return {
           ra: aluno.ra,
+          nome: aluno.nome,
+          matriculaId: aluno.matriculaId,
           status: found ? found.status : '',
         }
       })

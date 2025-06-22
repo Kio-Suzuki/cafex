@@ -5,11 +5,14 @@ import PresencaModal from '@/components/PresencaModal.vue'
 function groupByOficinaData(presencas) {
   const grupos = {}
   for (const p of presencas) {
-    const key = `${p.oficinaId}|${new Date(p.dataPresenca).toISOString().slice(0, 10)}`
+    const oficinaId = p.matricula?.oficina?.id
+    const oficina = p.matricula?.oficina
+    const aluno = p.matricula?.aluno
+    const key = `${oficinaId}|${new Date(p.dataPresenca).toISOString().slice(0, 10)}`
     if (!grupos[key]) {
       grupos[key] = {
-        oficinaId: p.oficinaId,
-        oficina: p.oficina,
+        oficinaId,
+        oficina,
         dataPresenca: p.dataPresenca,
         total: 0,
         presentes: 0,
@@ -22,7 +25,7 @@ function groupByOficinaData(presencas) {
     if (p.status === 'PRESENTE') grupos[key].presentes++
     if (p.status === 'AUSENTE') grupos[key].ausentes++
     if (p.status === 'JUSTIFICADO') grupos[key].justificados++
-    grupos[key].alunos.push({ ra: p.alunoRa, nome: p.aluno?.nome, status: p.status })
+    grupos[key].alunos.push({ ra: aluno?.id, nome: aluno?.nome, status: p.status })
   }
   return Object.values(grupos)
 }
@@ -71,8 +74,16 @@ export default {
             new Date(dataPresenca).toISOString().slice(0, 10),
       )
       if (!grupo) return
-      this.modalAlunos = grupo.alunos.map((a) => ({ ra: a.ra, nome: a.nome }))
-      this.modalPresencas = grupo.alunos.map((a) => ({ ra: a.ra, status: a.status }))
+      this.modalAlunos = grupo.alunos.map((a) => ({
+        ra: a.ra,
+        nome: a.nome,
+        matriculaId: a.matriculaId,
+      }))
+      this.modalPresencas = grupo.alunos.map((a) => ({
+        ra: a.ra,
+        status: a.status,
+        matriculaId: a.matriculaId,
+      }))
       this.modalOficina = grupo.oficina
       this.modalPresenca = true
     },
