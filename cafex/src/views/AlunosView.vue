@@ -14,7 +14,6 @@ export default {
       items: [],
       params: {
         nome: null,
-        ra: null,
       },
     }
   },
@@ -69,14 +68,14 @@ export default {
     },
     openEditItem(item) {
       this.isEdit = true
-      this.itemEditId = item.ra
+      this.itemEditId = item.id
 
       this.params.nome = item.nome
       
       this.dialog = true
     },
     confirmDelete(item) {
-      this.itemDeleteId = item.ra
+      this.itemDeleteId = item.id
       this.dialogDelete = true
     },
     deleteItem() {
