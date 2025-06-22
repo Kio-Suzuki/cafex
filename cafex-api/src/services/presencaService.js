@@ -4,7 +4,7 @@ import logError from '../logs/logError.js';
 
 class PresencaService {
   static validateFields(data) {
-    const requiredFields = ['dataPresenca', 'status', 'matriculaId'];
+    const requiredFields = ["dataPresenca", "status", "matriculaId"];
     for (const field of requiredFields) {
       if (!data[field]) {
         const error = new Error(
@@ -15,7 +15,7 @@ class PresencaService {
       }
     }
 
-    if (typeof data.dataPresenca === 'string') {
+    if (typeof data.dataPresenca === "string") {
       const date = new Date(data.dataPresenca);
       if (isNaN(date.getTime())) {
         const error = new Error('Formato de "dataPresenca" inválido.');
@@ -33,25 +33,30 @@ class PresencaService {
     try {
       this.validateFields(data);
 
-      data.matriculaId = parseInt(data.matriculaId);
-
-      const matricula = await MatriculaModel.getById(data.matriculaId);
-      if (!matricula) throw new Error('Matrícula não encontrada.');
+      // Busca matrícula pelo alunoId e oficinaId, se necessário
+      if (!data.matriculaId && data.alunoId && data.oficinaId) {
+        const matricula = await MatriculaModel.findByAlunoOficina(
+          data.alunoId,
+          data.oficinaId
+        );
+        if (!matricula) throw new Error("Matrícula não encontrada.");
+        data.matriculaId = matricula.id;
+      }
 
       return await PresencaModel.create(data);
     } catch (err) {
       const isDuplicidade =
-        (err.code === 'P2002' &&
+        (err.code === "P2002" &&
           err.meta &&
           err.meta.target &&
-          err.meta.target.includes('dataPresenca_matriculaId')) ||
-        (typeof err.message === 'string' &&
-          (err.message.includes('Unique constraint failed') ||
-            err.message.includes('dataPresenca_matriculaId') ||
-            err.message.includes('presença registrada')));
+          err.meta.target.includes("dataPresenca_matriculaId")) ||
+        (typeof err.message === "string" &&
+          (err.message.includes("Unique constraint failed") ||
+            err.message.includes("dataPresenca_matriculaId") ||
+            err.message.includes("presença registrada")));
       if (isDuplicidade) {
         const error = new Error(
-          'Já existe uma presença registrada para esta matrícula e data.'
+          "Já existe uma presença registrada para esta matrícula e data."
         );
         error.statusCode = 409;
         throw error;
@@ -66,11 +71,11 @@ class PresencaService {
     for (const data of presencas) {
       try {
         await this.createPresenca(data);
-        results.push({ matriculaId: data.matriculaId, status: 'ok' });
+        results.push({ matriculaId: data.matriculaId, status: "ok" });
       } catch (err) {
         results.push({
           matriculaId: data.matriculaId,
-          status: 'erro',
+          status: "erro",
           message: err.message,
         });
       }
@@ -113,7 +118,7 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error('Presenca não encontrada.');
+        const error = new Error("Presenca não encontrada.");
         error.statusCode = 404;
         throw error;
       }
@@ -128,12 +133,12 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error('Presenca não encontrada para atualização.');
+        const error = new Error("Presenca não encontrada para atualização.");
         error.statusCode = 404;
         throw error;
       }
 
-      if (data?.dataPresenca && typeof data.dataPresenca === 'string') {
+      if (data?.dataPresenca && typeof data.dataPresenca === "string") {
         const date = new Date(data.dataPresenca);
         if (isNaN(date.getTime())) {
           const error = new Error('Formato de "dataPresenca" inválido.');
@@ -154,7 +159,7 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error('Presenca não encontrada para exclusão.');
+        const error = new Error("Presenca não encontrada para exclusão.");
         error.statusCode = 404;
         throw error;
       }
@@ -165,4 +170,5 @@ class PresencaService {
     }
   }
 }
+
 export default PresencaService;

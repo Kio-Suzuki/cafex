@@ -1,11 +1,15 @@
 import prisma from "../database/prisma.js";
 
-const MatriculaModel = {
-  async create(data) {
-    return await prisma.matricula.create({ data });
-  },
+class MatriculaModel {
+  static async create(data) {
+    return prisma.matricula.create({ data });
+  }
 
-  async getAll() {
+  static async deleteByOficinaId(oficinaId) {
+    return prisma.matricula.deleteMany({ where: { oficinaId } });
+  }
+
+  static async getAll() {
     return await prisma.matricula.findMany({
       include: {
         aluno: true,
@@ -13,9 +17,9 @@ const MatriculaModel = {
         presencas: true,
       },
     });
-  },
+  }
 
-  async getById(id) {
+  static async getById(id) {
     return await prisma.matricula.findUnique({
       where: { id: Number(id) },
       include: {
@@ -24,20 +28,33 @@ const MatriculaModel = {
         presencas: true,
       },
     });
-  },
+  }
 
-  async update(id, data) {
+  static async update(id, data) {
     return await prisma.matricula.update({
       where: { id: Number(id) },
       data,
     });
-  },
+  }
 
-  async delete(id) {
+  static async delete(id) {
     return await prisma.matricula.delete({
       where: { id: Number(id) },
     });
-  },
-};
+  }
+
+  static async getAlunosByOficinaId(oficinaId) {
+    return prisma.matricula.findMany({
+      where: { oficinaId },
+      include: { aluno: true },
+    });
+  }
+
+  static async findByAlunoOficina(alunoId, oficinaId) {
+    return prisma.matricula.findFirst({
+      where: { alunoId, oficinaId },
+    });
+  }
+}
 
 export default MatriculaModel;

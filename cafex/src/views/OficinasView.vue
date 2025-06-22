@@ -19,6 +19,7 @@ export default {
         nome: null,
         descricao: null,
         diaSemana: null,
+        alunos: [],
       },
       presencaModal: false,
       presencaModalVisualizacao: false,
@@ -34,6 +35,9 @@ export default {
         { text: 'Sexta-feira', value: 'SEXTA' },
         { text: 'Sábado', value: 'SABADO' },
       ],
+      alunosDisponiveis: [],
+      alunosBusca: '',
+      alunosMatriculados: [], // alunos já associados (matriculados) à oficina
     }
   },
   methods: {
@@ -58,12 +62,33 @@ export default {
           console.log(err)
         })
     },
+    async getAlunosDisponiveis() {
+      try {
+        const res = await axios.get('/alunos')
+        this.alunosDisponiveis = res.data
+      } catch (e) {
+        this.alunosDisponiveis = []
+      }
+    },
+    async getAlunosMatriculados(oficinaId) {
+      // Busca alunos matriculados via endpoint de matrícula
+      const res = await axios.get(`/matriculas?oficinaId=${oficinaId}`)
+      // Espera que venha [{ aluno: { id, nome, ... }, ... }]
+      this.alunosMatriculados = res.data.map((m) => m.aluno)
+    },
     setItem() {
       this.dialog = false
 
+      const payload = {
+        nome: this.params.nome,
+        descricao: this.params.descricao,
+        diaSemana: this.params.diaSemana,
+        alunos: this.params.alunos,
+      }
+
       if (this.isEdit) {
         axios
-          .put(`/oficinas/${this.itemEditId}`, this.params)
+          .put(`/oficinas/${this.itemEditId}`, payload)
           .then((res) => {
             this.$toast.success('Oficina editada com sucesso!')
             this.getItems()
@@ -77,7 +102,7 @@ export default {
       }
 
       axios
-        .post('/oficinas', this.params)
+        .post('/oficinas', payload)
         .then((res) => {
           this.$toast.success('Oficina cadastrada com sucesso!')
           this.getItems()
@@ -97,6 +122,22 @@ export default {
       this.params.descricao = item.descricao
       this.params.diaSemana = item.diaSemana
 
+      this.getAlunosDisponiveis()
+      this.getAlunosMatriculados(item.id)
+      // params.alunos = apenas os ids dos matriculados
+      this.params.alunos = this.alunosMatriculados.map((a) => a.id)
+
+      this.dialog = true
+    },
+    async openCreateItem() {
+      this.isEdit = false
+      this.itemEditId = null
+      this.params.nome = null
+      this.params.descricao = null
+      this.params.diaSemana = null
+      this.params.alunos = []
+      this.alunosMatriculados = []
+      await this.getAlunosDisponiveis()
       this.dialog = true
     },
     confirmDelete(item) {
@@ -125,6 +166,7 @@ export default {
       this.params.nome = null
       this.params.descricao = null
       this.params.diaSemana = null
+      this.params.alunos = []
 
       this.dialog = false
     },
@@ -150,11 +192,9 @@ export default {
       try {
         const resAlunos = await axios.get(`/alunos?oficinaId=${oficina.id}`)
         this.alunosOficina = resAlunos.data
-        // Busca presenças do dia
         const resPresencas = await axios.get(
           `/presencas?oficinaId=${oficina.id}&dataInicio=${dataISO}&dataFim=${dataISO}`,
         )
-        // Cria um map ra -> status
         presencasMap = Object.fromEntries(resPresencas.data.map((p) => [p.alunoRa, p.status]))
         this.presencasOficina = this.alunosOficina.map((aluno) => ({
           ra: aluno.ra,
@@ -215,9 +255,31 @@ export default {
           console.log(err)
         })
     },
+    filtrarAlunosDisponiveis() {
+      const busca = this.alunosBusca?.toLowerCase() || ''
+      // Só mostra alunos que NÃO estão matriculados (não estão nos chips)
+      return this.alunosDisponiveis.filter(
+        (a) =>
+          (!busca || a.nome.toLowerCase().includes(busca)) && !this.params.alunos.includes(a.id),
+      )
+    },
+    adicionarAluno(id) {
+      if (!this.params.alunos.includes(id)) {
+        this.params.alunos.push(id)
+        // Adiciona também no array de matriculados para aparecer no chip imediatamente
+        const aluno = this.alunosDisponiveis.find((a) => a.id === id)
+        if (aluno) this.alunosMatriculados.push(aluno)
+      }
+      this.alunosBusca = ''
+    },
+    removerAluno(id) {
+      this.params.alunos = this.params.alunos.filter((aid) => aid !== id)
+      this.alunosMatriculados = this.alunosMatriculados.filter((a) => a.id !== id)
+    },
   },
   async created() {
     await this.getItems()
+    await this.getAlunosDisponiveis()
   },
 }
 </script>
@@ -273,6 +335,7 @@ export default {
               text="Cadastrar Oficina"
               color="success"
               v-bind="activatorProps"
+              @click="openCreateItem"
             ></v-btn>
           </template>
 
@@ -310,6 +373,52 @@ export default {
                     multiple
                     required
                   />
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <div style="margin-bottom: 4px; font-weight: 500">Alunos associados</div>
+                  <div style="width: 100%; display: flex; flex-wrap: wrap">
+                    <v-chip
+                      v-for="aluno in alunosMatriculados"
+                      :key="aluno.id"
+                      class="ma-1"
+                      closable
+                      @click:close="removerAluno(aluno.id)"
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                    >
+                      {{ aluno.nome }}
+                    </v-chip>
+                  </div>
+                  <v-text-field
+                    v-model="alunosBusca"
+                    label="Buscar e adicionar aluno"
+                    prepend-inner-icon="mdi-magnify"
+                    hide-details
+                    dense
+                    style="width: 100%; margin-top: 8px"
+                    @keydown.enter.prevent="
+                      filtrarAlunosDisponiveis().length &&
+                      adicionarAluno(filtrarAlunosDisponiveis()[0].id)
+                    "
+                  ></v-text-field>
+                  <div
+                    v-if="alunosBusca && filtrarAlunosDisponiveis().length"
+                    style="max-height: 120px; overflow-y: auto; width: 100%"
+                  >
+                    <v-list density="compact">
+                      <v-list-item
+                        v-for="aluno in filtrarAlunosDisponiveis()"
+                        :key="aluno.id"
+                        @click="adicionarAluno(aluno.id)"
+                        style="cursor: pointer"
+                      >
+                        <v-list-item-title>{{ aluno.nome }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </div>
                 </v-col>
               </v-row>
               <small class="text-caption text-medium-emphasis">*indica campos obrigatórios</small>
