@@ -91,34 +91,61 @@ export default {
         <v-icon icon="mdi-magnify"></v-icon> &nbsp; Consulta de Presenças
       </v-col>
       <v-col class="d-flex justify-end">
-        <v-select v-model="filtroOficina" :items="oficinas" item-title="nome" item-value="id"
-          label="Filtrar por Oficina" style="max-width: 220px" clearable @update:model-value="buscarPresencas" />
-        <v-date-input v-model="filtroData" label="Filtrar por Data" style="max-width: 180px"
-          @update:model-value="buscarPresencas" clearable />
+        <v-select
+          v-model="filtroOficina"
+          :items="oficinas"
+          item-title="nome"
+          item-value="id"
+          label="Filtrar por Oficina"
+          style="max-width: 220px"
+          clearable
+          @update:model-value="buscarPresencas"
+        />
+        <v-date-input
+          v-model="filtroData"
+          label="Filtrar por Data"
+          style="max-width: 180px"
+          @update:model-value="buscarPresencas"
+          clearable
+        />
       </v-col>
     </v-card-title>
     <v-divider></v-divider>
-    <v-data-table :items="grupos" :headers="[
-      { title: 'Oficina', key: 'oficina.nome' },
-      { title: 'Data', key: 'dataPresenca' },
-      { title: 'Presentes', key: 'presentes' },
-      { title: 'Ausentes', key: 'ausentes' },
-      { title: 'Justificados', key: 'justificados' },
-      { title: 'Total', key: 'total' },
-      { title: '', key: 'actions', align: 'center' },
-    ]">
+    <v-data-table
+      :items="grupos"
+      :headers="[
+        { title: 'Oficina', key: 'oficina.nome' },
+        { title: 'Data', key: 'dataPresenca' },
+        { title: 'Presentes', key: 'presentes' },
+        { title: 'Ausentes', key: 'ausentes' },
+        { title: 'Justificados', key: 'justificados' },
+        { title: 'Total', key: 'total' },
+        { title: '', key: 'actions', align: 'center' },
+      ]"
+    >
       <template v-slot:item.dataPresenca="{ item }">
         {{ new Date(item.dataPresenca).toLocaleDateString() }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-btn icon color="primary" size="small" class="mx-1"
-          @click="visualizarPresencas(item.oficinaId, item.dataPresenca)">
+        <v-btn
+          icon
+          color="primary"
+          size="small"
+          class="mx-1"
+          @click="visualizarPresencas(item.oficinaId, item.dataPresenca)"
+        >
           <v-icon>mdi-eye</v-icon>
         </v-btn>
       </template>
     </v-data-table>
-    <PresencaModal :show="modalPresenca" :oficina="modalOficina" :alunos="modalAlunos"
-      :presencasIniciais="modalPresencas" :visualizacao="true" @update:show="modalPresenca = $event" />
+    <PresencaModal
+      :show="modalPresenca"
+      :oficina="modalOficina"
+      :alunos="modalAlunos"
+      :presencasIniciais="modalPresencas"
+      :visualizacao="true"
+      @update:show="modalPresenca = $event"
+    />
   </v-card>
 </template>
 

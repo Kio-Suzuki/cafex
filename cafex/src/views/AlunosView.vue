@@ -21,7 +21,7 @@ export default {
     headers() {
       return [
         { title: 'Nome', key: 'nome', align: 'start' },
-        { title: '', key: 'actions', align: 'center'},
+        { title: '', key: 'actions', align: 'center' },
       ]
     },
     async getItems() {
@@ -71,7 +71,7 @@ export default {
       this.itemEditId = item.id
 
       this.params.nome = item.nome
-      
+
       this.dialog = true
     },
     confirmDelete(item) {

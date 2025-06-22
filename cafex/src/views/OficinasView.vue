@@ -33,17 +33,17 @@ export default {
         { text: 'Quinta-feira', value: 'QUINTA' },
         { text: 'Sexta-feira', value: 'SEXTA' },
         { text: 'Sábado', value: 'SABADO' },
-      ]
+      ],
     }
   },
   methods: {
     headers() {
       return [
-        { title: 'Nome',                  key: 'nome',        align: 'start'  },
-        { title: 'Descrição',             key: 'descricao',   align: 'start'  },
-        { title: 'Dias',                  key: 'diaSemana',   align: 'start'  },
-        { title: 'Quantidade de Alunos',  key: 'qtdAlunos',   align: 'start'  },
-        { title: '',                      key: 'actions',     align: 'center' },
+        { title: 'Nome', key: 'nome', align: 'start' },
+        { title: 'Descrição', key: 'descricao', align: 'start' },
+        { title: 'Dias', key: 'diaSemana', align: 'start' },
+        { title: 'Quantidade de Alunos', key: 'qtdAlunos', align: 'start' },
+        { title: '', key: 'actions', align: 'center' },
       ]
     },
     async getItems() {
@@ -187,34 +187,34 @@ export default {
       }
       this.presencaModal = false
     },
-    getDiasSemana(diaSemana, ret = '-'){
-      if(!diaSemana || !diaSemana?.length){
-        return ret;
+    getDiasSemana(diaSemana, ret = '-') {
+      if (!diaSemana || !diaSemana?.length) {
+        return ret
       }
-      let string = '';
-      diaSemana.forEach(diaEnum => {
-        this.diaSemanaOptions.forEach(diaSemanaOption => {
-          if(diaSemanaOption.value == diaEnum){
-            string += diaSemanaOption.text + ', ';
+      let string = ''
+      diaSemana.forEach((diaEnum) => {
+        this.diaSemanaOptions.forEach((diaSemanaOption) => {
+          if (diaSemanaOption.value == diaEnum) {
+            string += diaSemanaOption.text + ', '
           }
-        });
-      });
-      return string.slice(0, -2);
+        })
+      })
+      return string.slice(0, -2)
     },
-    async getQtdAlunos(oficinaId){
-       axios
+    async getQtdAlunos(oficinaId) {
+      axios
         .get(`/oficinas/${oficinaId}/getQtdAlunos`)
         .then((res) => {
-          let result = 0;
-          if(res?.data){
-            result = res.data;
+          let result = 0
+          if (res?.data) {
+            result = res.data
           }
-          return result;
+          return result
         })
         .catch((err) => {
           console.log(err)
         })
-    }
+    },
   },
   async created() {
     await this.getItems()
