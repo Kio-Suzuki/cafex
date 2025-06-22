@@ -32,8 +32,6 @@ class PresencaService {
   static async createPresenca(data) {
     try {
       this.validateFields(data);
-
-      // Busca matrícula pelo alunoId e oficinaId, se necessário
       if (!data.matriculaId && data.alunoId && data.oficinaId) {
         const matricula = await MatriculaModel.findByAlunoOficina(
           data.alunoId,

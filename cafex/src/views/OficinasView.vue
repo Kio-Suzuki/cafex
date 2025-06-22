@@ -37,7 +37,7 @@ export default {
       ],
       alunosDisponiveis: [],
       alunosBusca: '',
-      alunosMatriculados: [], // alunos já associados (matriculados) à oficina
+      alunosMatriculados: [],
       qtdAlunosPorOficina: {},
     }
   },
@@ -79,9 +79,7 @@ export default {
       }
     },
     async getAlunosMatriculados(oficinaId) {
-      // Busca alunos matriculados via endpoint de matrícula
       const res = await axios.get(`/matriculas?oficinaId=${oficinaId}`)
-      // Espera que venha [{ aluno: { id, nome, ... }, ... }]
       this.alunosMatriculados = res.data.map((m) => m.aluno)
     },
     setItem() {
@@ -132,7 +130,6 @@ export default {
 
       this.getAlunosDisponiveis()
       this.getAlunosMatriculados(item.id)
-      // params.alunos = apenas os ids dos matriculados
       this.params.alunos = this.alunosMatriculados.map((a) => a.id)
 
       this.dialog = true
@@ -208,7 +205,6 @@ export default {
         const resPresencas = await axios.get(
           `/presencas?oficinaId=${oficina.id}&dataInicio=${dataISO}&dataFim=${dataISO}`,
         )
-        // Mapear por matriculaId
         presencasMap = Object.fromEntries(resPresencas.data.map((p) => [p.matricula?.id, p.status]))
         this.presencasOficina = this.alunosOficina.map((aluno) => ({
           ra: aluno.ra,
@@ -262,7 +258,6 @@ export default {
     },
     filtrarAlunosDisponiveis() {
       const busca = this.alunosBusca?.toLowerCase() || ''
-      // Só mostra alunos que NÃO estão matriculados (não estão nos chips)
       return this.alunosDisponiveis.filter(
         (a) =>
           (!busca || a.nome.toLowerCase().includes(busca)) && !this.params.alunos.includes(a.id),
@@ -271,7 +266,6 @@ export default {
     adicionarAluno(id) {
       if (!this.params.alunos.includes(id)) {
         this.params.alunos.push(id)
-        // Adiciona também no array de matriculados para aparecer no chip imediatamente
         const aluno = this.alunosDisponiveis.find((a) => a.id === id)
         if (aluno) this.alunosMatriculados.push(aluno)
       }
