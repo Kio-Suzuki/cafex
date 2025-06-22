@@ -1,12 +1,10 @@
-import PresencaModel from "../models/presencaModel.js";
-import OficinaModel from "../models/oficinaModel.js";
-import AlunoModel from "../models/alunoModel.js";
-
-import logError from "../logs/logError.js";
+import PresencaModel from '../models/presencaModel.js';
+import MatriculaModel from '../models/matriculaModel.js';
+import logError from '../logs/logError.js';
 
 class PresencaService {
   static validateFields(data) {
-    const requiredFields = ["dataPresenca", "status", "alunoRa", "oficinaId"];
+    const requiredFields = ['dataPresenca', 'status', 'matriculaId'];
     for (const field of requiredFields) {
       if (!data[field]) {
         const error = new Error(
@@ -17,7 +15,7 @@ class PresencaService {
       }
     }
 
-    if (typeof data.dataPresenca === "string") {
+    if (typeof data.dataPresenca === 'string') {
       const date = new Date(data.dataPresenca);
       if (isNaN(date.getTime())) {
         const error = new Error('Formato de "dataPresenca" inválido.');
@@ -35,29 +33,25 @@ class PresencaService {
     try {
       this.validateFields(data);
 
-      data.alunoRa = parseInt(data.alunoRa);
-      data.oficinaId = parseInt(data.oficinaId);
+      data.matriculaId = parseInt(data.matriculaId);
 
-      const oficina = await OficinaModel.getById(data.oficinaId);
-      if (!oficina) throw new Error("Oficina não encontrada.");
-
-      const aluno = await AlunoModel.getByRa(data.alunoRa);
-      if (!aluno) throw new Error("Aluno não encontrado.");
+      const matricula = await MatriculaModel.getById(data.matriculaId);
+      if (!matricula) throw new Error('Matrícula não encontrada.');
 
       return await PresencaModel.create(data);
     } catch (err) {
       const isDuplicidade =
-        (err.code === "P2002" &&
+        (err.code === 'P2002' &&
           err.meta &&
           err.meta.target &&
-          err.meta.target.includes("alunoRa_oficinaId_dataPresenca")) ||
-        (typeof err.message === "string" &&
-          (err.message.includes("Unique constraint failed") ||
-            err.message.includes("alunoRa_oficinaId_dataPresenca") ||
-            err.message.includes("presença registrada")));
+          err.meta.target.includes('dataPresenca_matriculaId')) ||
+        (typeof err.message === 'string' &&
+          (err.message.includes('Unique constraint failed') ||
+            err.message.includes('dataPresenca_matriculaId') ||
+            err.message.includes('presença registrada')));
       if (isDuplicidade) {
         const error = new Error(
-          "Já existe uma presença registrada para este aluno, oficina e data."
+          'Já existe uma presença registrada para esta matrícula e data.'
         );
         error.statusCode = 409;
         throw error;
@@ -72,11 +66,11 @@ class PresencaService {
     for (const data of presencas) {
       try {
         await this.createPresenca(data);
-        results.push({ alunoRa: data.alunoRa, status: "ok" });
+        results.push({ matriculaId: data.matriculaId, status: 'ok' });
       } catch (err) {
         results.push({
-          alunoRa: data.alunoRa,
-          status: "erro",
+          matriculaId: data.matriculaId,
+          status: 'erro',
           message: err.message,
         });
       }
@@ -88,12 +82,8 @@ class PresencaService {
     try {
       const where = {};
 
-      if (filter.alunoRa) {
-        where.alunoRa = parseInt(filter.alunoRa);
-      }
-
-      if (filter.oficinaId) {
-        where.oficinaId = parseInt(filter.oficinaId);
+      if (filter.matriculaId) {
+        where.matriculaId = parseInt(filter.matriculaId);
       }
 
       if (filter.dataInicio || filter.dataFim) {
@@ -123,7 +113,7 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error("Presenca não encontrada.");
+        const error = new Error('Presenca não encontrada.');
         error.statusCode = 404;
         throw error;
       }
@@ -138,12 +128,12 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error("Presenca não encontrada para atualização.");
+        const error = new Error('Presenca não encontrada para atualização.');
         error.statusCode = 404;
         throw error;
       }
 
-      if (data?.dataPresenca && typeof data.dataPresenca === "string") {
+      if (data?.dataPresenca && typeof data.dataPresenca === 'string') {
         const date = new Date(data.dataPresenca);
         if (isNaN(date.getTime())) {
           const error = new Error('Formato de "dataPresenca" inválido.');
@@ -164,7 +154,7 @@ class PresencaService {
     try {
       const presenca = await PresencaModel.getById(parseInt(id));
       if (!presenca) {
-        const error = new Error("Presenca não encontrada para exclusão.");
+        const error = new Error('Presenca não encontrada para exclusão.');
         error.statusCode = 404;
         throw error;
       }

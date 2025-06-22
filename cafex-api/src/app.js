@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import oficinaRouter from "./routes/oficinaRouter.js";
 import presencaRouter from "./routes/presencaRouter.js";
 import alunoRouter from "./routes/alunoRouter.js";
+import matriculaRouter from "./routes/matriculaRouter.js"; 
 
 import generalErrorHandler from "./middlewares/generalErrorHandler.js";
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use("/api", oficinaRouter);
 app.use("/api", presencaRouter);
 app.use("/api", alunoRouter);
+app.use("/api", matriculaRouter);
 
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

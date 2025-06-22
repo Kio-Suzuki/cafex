@@ -6,10 +6,11 @@ class OficinaService {
     try {
       if (
         !dadosDaOficina.nome ||
-        !dadosDaOficina.diaSemana
+        !Array.isArray(dadosDaOficina.diaSemana) ||
+        dadosDaOficina.diaSemana.length === 0
       ) {
         const error = new Error(
-          'Os campos "nome" e "diaSemana" são obrigatórios.'
+          'Os campos "nome" e "diaSemana" (com pelo menos um dia) são obrigatórios.'
         );
         error.statusCode = 400;
         throw error;

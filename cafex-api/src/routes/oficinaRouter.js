@@ -1,7 +1,7 @@
-import express from "express";
-import OficinaController from "../controllers/oficinaController.js";
+import express from 'express';
+import OficinaController from '../controllers/oficinaController.js';
 
-const router = express.Router();
+const oficinaRouter = express.Router();
 
 /**
  * @swagger
@@ -20,21 +20,18 @@ const router = express.Router();
  *                 type: string
  *               descricao:
  *                 type: string
- *               horarioInicio:
- *                 type: string
- *                 format: date-time
- *               horarioFim:
- *                 type: string
- *                 format: date-time
+ *               diaSemana:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *             required:
  *               - nome
- *               - horarioInicio
- *               - horarioFim
+ *               - diaSemana
  *     responses:
  *       201:
  *         description: Oficina criada com sucesso
  */
-router.post("/oficinas", OficinaController.createOficina);
+router.post('/oficinas', OficinaController.createOficina);
 
 /**
  * @swagger
@@ -46,7 +43,7 @@ router.post("/oficinas", OficinaController.createOficina);
  *       200:
  *         description: Lista de oficinas
  */
-router.get("/oficinas", OficinaController.listAllOficinas);
+router.get('/oficinas', OficinaController.listAllOficinas);
 
 /**
  * @swagger
@@ -67,7 +64,7 @@ router.get("/oficinas", OficinaController.listAllOficinas);
  *       404:
  *         description: Oficina não encontrada
  */
-router.get("/oficinas/:id", OficinaController.getOficinaById);
+router.get('/oficinas/:id', OficinaController.getOficinaById);
 
 /**
  * @swagger
@@ -86,7 +83,7 @@ router.get("/oficinas/:id", OficinaController.getOficinaById);
  *       200:
  *         description: Quantidade de Alunos
  */
-router.get("/oficinas/:id/getQtdAlunos", OficinaController.getQtdAlunos);
+router.get('/oficinas/:id/getQtdAlunos', OficinaController.getQtdAlunos);
 
 /**
  * @swagger
@@ -112,19 +109,17 @@ router.get("/oficinas/:id/getQtdAlunos", OficinaController.getQtdAlunos);
  *                 type: string
  *               descricao:
  *                 type: string
- *               horarioInicio:
- *                 type: string
- *                 format: date-time
- *               horarioFim:
- *                 type: string
- *                 format: date-time
+ *               diaSemana:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       200:
  *         description: Oficina atualizada
  *       404:
  *         description: Oficina não encontrada
  */
-router.put("/oficinas/:id", OficinaController.updateOficina);
+router.put('/oficinas/:id', OficinaController.updateOficina);
 
 /**
  * @swagger
@@ -145,6 +140,6 @@ router.put("/oficinas/:id", OficinaController.updateOficina);
  *       404:
  *         description: Oficina não encontrada
  */
-router.delete("/oficinas/:id", OficinaController.deleteOficina);
+router.delete('/oficinas/:id', OficinaController.deleteOficina);
 
-export default router;
+export default oficinaRouter;
