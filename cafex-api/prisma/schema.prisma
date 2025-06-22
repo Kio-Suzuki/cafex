@@ -14,12 +14,21 @@ enum StatusPresenca {
   JUSTIFICADO
 }
 
+enum DiaSemana {
+  DOMINGO
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+}
+
 model Oficina {
   id            Int           @id @default(autoincrement())
   nome          String
   descricao     String?
-  horarioInicio DateTime
-  horarioFim    DateTime
+  diaSemana     DiaSemana
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   presencas     Presenca[]

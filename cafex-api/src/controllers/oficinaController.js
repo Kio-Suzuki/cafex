@@ -29,6 +29,16 @@ class OficinaController {
     }
   }
 
+  static async getQtdAlunos(req, res, next) {
+    try {
+      const { id } = req.params;
+      const oficina = await OficinaService.getQtdAlunos(id);
+      res.status(200).json(oficina);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async updateOficina(req, res, next) {
     try {
       const { id } = req.params;

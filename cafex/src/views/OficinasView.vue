@@ -18,24 +18,32 @@ export default {
       params: {
         nome: null,
         descricao: null,
-        horarioInicio: null,
-        horarioFim: null,
+        diaSemana: null,
       },
       presencaModal: false,
       presencaModalVisualizacao: false,
       oficinaSelecionada: null,
       alunosOficina: [],
       presencasOficina: [],
+      diaSemanaOptions: [
+        { text: 'Domingo', value: 'DOMINGO' },
+        { text: 'Segunda-feira', value: 'SEGUNDA' },
+        { text: 'Terça-feira', value: 'TERCA' },
+        { text: 'Quarta-feira', value: 'QUARTA' },
+        { text: 'Quinta-feira', value: 'QUINTA' },
+        { text: 'Sexta-feira', value: 'SEXTA' },
+        { text: 'Sábado', value: 'SABADO' },
+      ]
     }
   },
   methods: {
     headers() {
       return [
-        { title: 'Nome', key: 'nome', align: 'start' },
-        { title: 'Descrição', key: 'descricao', align: 'start' },
-        { title: 'Início', key: 'horarioInicio', align: 'start' },
-        { title: 'Fim', key: 'horarioFim', align: 'start' },
-        { title: '', key: 'actions', align: 'center' },
+        { title: 'Nome',                  key: 'nome',        align: 'start'  },
+        { title: 'Descrição',             key: 'descricao',   align: 'start'  },
+        { title: 'Dias',                  key: 'diaSemana',   align: 'start'  },
+        { title: 'Quantidade de Alunos',  key: 'qtdAlunos',   align: 'start'  },
+        { title: '',                      key: 'actions',     align: 'center' },
       ]
     },
     async getItems() {
@@ -51,9 +59,6 @@ export default {
         })
     },
     setItem() {
-      this.params.horarioInicio = formatDateToUTC(this.params.horarioInicio)
-      this.params.horarioFim = formatDateToUTC(this.params.horarioFim)
-
       this.dialog = false
 
       if (this.isEdit) {
@@ -90,8 +95,7 @@ export default {
 
       this.params.nome = item.nome
       this.params.descricao = item.descricao
-      this.params.horarioInicio = item.horarioInicio
-      this.params.horarioFim = item.horarioFim
+      this.params.diaSemana = item.diaSemana
 
       this.dialog = true
     },
@@ -120,8 +124,7 @@ export default {
 
       this.params.nome = null
       this.params.descricao = null
-      this.params.horarioInicio = null
-      this.params.horarioFim = null
+      this.params.diaSemana = null
 
       this.dialog = false
     },
@@ -184,6 +187,34 @@ export default {
       }
       this.presencaModal = false
     },
+    getDiasSemana(diaSemana, ret = '-'){
+      if(!diaSemana || !diaSemana?.length){
+        return ret;
+      }
+      let string = '';
+      diaSemana.forEach(diaEnum => {
+        this.diaSemanaOptions.forEach(diaSemanaOption => {
+          if(diaSemanaOption.value == diaEnum){
+            string += diaSemanaOption.text + ', ';
+          }
+        });
+      });
+      return string.slice(0, -2);
+    },
+    async getQtdAlunos(oficinaId){
+       axios
+        .get(`/oficinas/${oficinaId}/getQtdAlunos`)
+        .then((res) => {
+          let result = 0;
+          if(res?.data){
+            result = res.data;
+          }
+          return result;
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   },
   async created() {
     await this.getItems()
@@ -266,19 +297,19 @@ export default {
                 </v-col>
               </v-row>
               <v-row dense>
-                <v-col cols="6">
-                  <v-date-input
-                    v-model="params.horarioInicio"
-                    label="Data início*"
+                <v-col cols="12">
+                  <v-select
+                    class="text-left"
+                    :items="diaSemanaOptions"
+                    v-model="params.diaSemana"
+                    label="Dia(as) da Semana"
+                    item-title="text"
+                    item-value="value"
+                    dense
+                    hide-details
+                    multiple
                     required
-                  ></v-date-input>
-                </v-col>
-                <v-col cols="6">
-                  <v-date-input
-                    v-model="params.horarioFim"
-                    label="Data Fim*"
-                    required
-                  ></v-date-input>
+                  />
                 </v-col>
               </v-row>
               <small class="text-caption text-medium-emphasis">*indica campos obrigatórios</small>
@@ -289,7 +320,7 @@ export default {
             <v-card-actions>
               <v-spacer></v-spacer>
 
-              <v-btn text="Cancelar" variant="plain" @click="closeModal"></v-btn>
+              <v-btn color="error" text="Cancelar" variant="plain" @click="closeModal"></v-btn>
 
               <v-btn color="primary" text="Confirmar" variant="tonal" @click="setItem"></v-btn>
             </v-card-actions>
@@ -301,14 +332,13 @@ export default {
     <v-divider></v-divider>
 
     <v-data-table :headers="headers()" v-model:search="search" :items="items">
-      <template v-slot:item.horarioInicio="{ item }">
-        {{ formatDate(item?.horarioInicio) }}
+      <template v-slot:item.diaSemana="{ item }">
+        {{ getDiasSemana(item?.diaSemana) }}
       </template>
 
-      <template v-slot:item.horarioFim="{ item }">
-        {{ formatDate(item?.horarioFim) }}
+      <template v-slot:item.qtdAlunos="{ item }">
+        {{ getQtdAlunos(item?.id) }}
       </template>
-
       <template v-slot:item.actions="{ item }">
         <v-col cols="auto" class="d-flex justify-center">
           <v-tooltip location="bottom">
@@ -342,7 +372,6 @@ export default {
               </v-btn>
             </template>
             <span>Excluir Oficina</span>
-            <span>Excluir Oficina</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
@@ -354,7 +383,7 @@ export default {
                 class="mx-1"
                 @click="abrirPresencaModal(item)"
               >
-                <v-icon color="grey-darken-4">mdi-account-group</v-icon>
+                <v-icon color="white">mdi-account-group</v-icon>
               </v-btn>
             </template>
             <span>Presenças</span>

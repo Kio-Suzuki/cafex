@@ -71,6 +71,25 @@ router.get("/oficinas/:id", OficinaController.getOficinaById);
 
 /**
  * @swagger
+ * /oficinas/{id}/getQtdAlunos:
+ *   get:
+ *     summary: Busca a quantidade de alunos de uma oficina pelo ID
+ *     tags: [Oficina]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID da oficina
+ *     responses:
+ *       200:
+ *         description: Quantidade de Alunos
+ */
+router.get("/oficinas/:id/getQtdAlunos", OficinaController.getQtdAlunos);
+
+/**
+ * @swagger
  * /oficinas/{id}:
  *   put:
  *     summary: Atualiza uma oficina pelo ID
