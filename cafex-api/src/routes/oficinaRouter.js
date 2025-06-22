@@ -31,7 +31,7 @@ const oficinaRouter = express.Router();
  *       201:
  *         description: Oficina criada com sucesso
  */
-router.post('/oficinas', OficinaController.createOficina);
+oficinaRouter.post('/oficinas', OficinaController.createOficina);
 
 /**
  * @swagger
@@ -43,7 +43,7 @@ router.post('/oficinas', OficinaController.createOficina);
  *       200:
  *         description: Lista de oficinas
  */
-router.get('/oficinas', OficinaController.listAllOficinas);
+oficinaRouter.get('/oficinas', OficinaController.listAllOficinas);
 
 /**
  * @swagger
@@ -64,7 +64,7 @@ router.get('/oficinas', OficinaController.listAllOficinas);
  *       404:
  *         description: Oficina não encontrada
  */
-router.get('/oficinas/:id', OficinaController.getOficinaById);
+oficinaRouter.get('/oficinas/:id', OficinaController.getOficinaById);
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ router.get('/oficinas/:id', OficinaController.getOficinaById);
  *       200:
  *         description: Quantidade de Alunos
  */
-router.get('/oficinas/:id/getQtdAlunos', OficinaController.getQtdAlunos);
+oficinaRouter.get('/oficinas/:id/getQtdAlunos', OficinaController.getQtdAlunos);
 
 /**
  * @swagger
@@ -119,7 +119,7 @@ router.get('/oficinas/:id/getQtdAlunos', OficinaController.getQtdAlunos);
  *       404:
  *         description: Oficina não encontrada
  */
-router.put('/oficinas/:id', OficinaController.updateOficina);
+oficinaRouter.put('/oficinas/:id', OficinaController.updateOficina);
 
 /**
  * @swagger
@@ -140,6 +140,6 @@ router.put('/oficinas/:id', OficinaController.updateOficina);
  *       404:
  *         description: Oficina não encontrada
  */
-router.delete('/oficinas/:id', OficinaController.deleteOficina);
+oficinaRouter.delete('/oficinas/:id', OficinaController.deleteOficina);
 
 export default oficinaRouter;

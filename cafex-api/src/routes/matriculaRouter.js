@@ -27,7 +27,7 @@ const matriculaRouter = express.Router();
  *       201:
  *         description: Matrícula criada com sucesso
  */
-router.post("/matriculas", MatriculaController.create);
+matriculaRouter.post("/matriculas", MatriculaController.create);
 
 /**
  * @swagger
@@ -39,7 +39,7 @@ router.post("/matriculas", MatriculaController.create);
  *       200:
  *         description: Lista de matrículas
  */
-router.get("/matriculas", MatriculaController.getAll);
+matriculaRouter.get("/matriculas", MatriculaController.getAll);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get("/matriculas", MatriculaController.getAll);
  *       404:
  *         description: Matrícula não encontrada
  */
-router.get("/matriculas/:id", MatriculaController.getById);
+matriculaRouter.get("/matriculas/:id", MatriculaController.getById);
 
 /**
  * @swagger
@@ -92,7 +92,7 @@ router.get("/matriculas/:id", MatriculaController.getById);
  *       404:
  *         description: Matrícula não encontrada
  */
-router.put("/matriculas/:id", MatriculaController.update);
+matriculaRouter.put("/matriculas/:id", MatriculaController.update);
 
 /**
  * @swagger
@@ -113,6 +113,6 @@ router.put("/matriculas/:id", MatriculaController.update);
  *       404:
  *         description: Matrícula não encontrada
  */
-router.delete("/matriculas/:id", MatriculaController.delete);
+matriculaRouter.delete("/matriculas/:id", MatriculaController.delete);
 
 export default matriculaRouter;
