@@ -6,33 +6,13 @@ class OficinaService {
     try {
       if (
         !dadosDaOficina.nome ||
-        !dadosDaOficina.horarioInicio ||
-        !dadosDaOficina.horarioFim
+        !dadosDaOficina.diaSemana
       ) {
         const error = new Error(
-          'Os campos "nome", "horarioInicio" e "horarioFim" são obrigatórios.'
+          'Os campos "nome" e "diaSemana" são obrigatórios.'
         );
         error.statusCode = 400;
         throw error;
-      }
-
-      if (typeof dadosDaOficina.horarioInicio === "string") {
-        const date = new Date(dadosDaOficina.horarioInicio);
-        if (isNaN(date.getTime())) {
-          const error = new Error('Formato de "horarioInicio" inválido.');
-          error.statusCode = 400;
-          throw error;
-        }
-        dadosDaOficina.horarioInicio = date;
-      }
-      if (typeof dadosDaOficina.horarioFim === "string") {
-        const date = new Date(dadosDaOficina.horarioFim);
-        if (isNaN(date.getTime())) {
-          const error = new Error('Formato de "horarioFim" inválido.');
-          error.statusCode = 400;
-          throw error;
-        }
-        dadosDaOficina.horarioFim = date;
       }
 
       return await OficinaModel.create(dadosDaOficina);
@@ -66,6 +46,22 @@ class OficinaService {
     }
   }
 
+  static async getQtdAlunos(id) {
+    try {
+      //todo finalizar apos mudanca do banco
+      // const oficina = await OficinaModel.getById(Number(id));
+      // if (!oficina) {
+      //   const error = new Error("Oficina não encontrada.");
+      //   error.statusCode = 404;
+      //   throw error;
+      // }
+      // return oficina;
+    } catch (err) {
+      logError(err);
+      throw err;
+    }
+  }
+
   static async updateOficina(id, dadosParaAtualizar) {
     try {
       const oficinaExistente = await OficinaModel.getById(Number(id));
@@ -73,31 +69,6 @@ class OficinaService {
         const error = new Error("Oficina não encontrada para atualização.");
         error.statusCode = 404;
         throw error;
-      }
-
-      if (
-        dadosParaAtualizar.horarioInicio &&
-        typeof dadosParaAtualizar.horarioInicio === "string"
-      ) {
-        const date = new Date(dadosParaAtualizar.horarioInicio);
-        if (isNaN(date.getTime())) {
-          const error = new Error('Formato de "horarioInicio" inválido.');
-          error.statusCode = 400;
-          throw error;
-        }
-        dadosParaAtualizar.horarioInicio = date;
-      }
-      if (
-        dadosParaAtualizar.horarioFim &&
-        typeof dadosParaAtualizar.horarioFim === "string"
-      ) {
-        const date = new Date(dadosParaAtualizar.horarioFim);
-        if (isNaN(date.getTime())) {
-          const error = new Error('Formato de "horarioFim" inválido.');
-          error.statusCode = 400;
-          throw error;
-        }
-        dadosParaAtualizar.horarioFim = date;
       }
 
       return await OficinaModel.update(Number(id), dadosParaAtualizar);

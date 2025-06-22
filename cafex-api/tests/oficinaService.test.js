@@ -24,79 +24,31 @@ describe("OficinaService", () => {
   });
 
   describe("createOficina", () => {
-    it("deve criar oficina com dados válidos e datas em string", async () => {
+    it("deve criar oficina com dados válidos", async () => {
       const dados = {
         nome: "Oficina Teste",
-        horarioInicio: "2025-06-01T10:00:00Z",
-        horarioFim: "2025-06-01T12:00:00Z",
+        diaSemana: "[SEGUNDA]",
       };
-      const created = {
-        ...dados,
-        horarioInicio: new Date(dados.horarioInicio),
-        horarioFim: new Date(dados.horarioFim),
-      };
+      const created = { ...dados };
       OficinaModel.create.mockResolvedValue(created);
 
       const result = await OficinaService.createOficina(dados);
 
       expect(OficinaModel.create).toHaveBeenCalledWith({
         nome: "Oficina Teste",
-        horarioInicio: new Date(dados.horarioInicio),
-        horarioFim: new Date(dados.horarioFim),
+        diaSemana: "[SEGUNDA]",
       });
       expect(result).toEqual(created);
-    });
-
-    it("deve criar oficina com datas já em Date", async () => {
-      const dados = {
-        nome: "Oficina Teste",
-        horarioInicio: new Date("2025-06-01T10:00:00Z"),
-        horarioFim: new Date("2025-06-01T12:00:00Z"),
-      };
-      OficinaModel.create.mockResolvedValue(dados);
-
-      const result = await OficinaService.createOficina(dados);
-
-      expect(OficinaModel.create).toHaveBeenCalledWith(dados);
-      expect(result).toEqual(dados);
     });
 
     it("deve lançar erro se campos obrigatórios faltarem", async () => {
       const dados = {
         nome: "Oficina Teste",
-        horarioInicio: "2025-06-01T10:00:00Z",
+        diaSemana: "[SEGUNDA]",
       };
 
       await expect(OficinaService.createOficina(dados)).rejects.toMatchObject({
-        message: 'Os campos "nome", "horarioInicio" e "horarioFim" são obrigatórios.',
-        statusCode: 400,
-      });
-      expect(logError).toHaveBeenCalled();
-    });
-
-    it("deve lançar erro se horarioInicio for string inválida", async () => {
-      const dados = {
-        nome: "Oficina Teste",
-        horarioInicio: "data-invalida",
-        horarioFim: "2025-06-01T12:00:00Z",
-      };
-
-      await expect(OficinaService.createOficina(dados)).rejects.toMatchObject({
-        message: 'Formato de "horarioInicio" inválido.',
-        statusCode: 400,
-      });
-      expect(logError).toHaveBeenCalled();
-    });
-
-    it("deve lançar erro se horarioFim for string inválida", async () => {
-      const dados = {
-        nome: "Oficina Teste",
-        horarioInicio: "2025-06-01T10:00:00Z",
-        horarioFim: "data-invalida",
-      };
-
-      await expect(OficinaService.createOficina(dados)).rejects.toMatchObject({
-        message: 'Formato de "horarioFim" inválido.',
+        message: 'Os campos "nome" e "diaSemana" são obrigatórios.',
         statusCode: 400,
       });
       expect(logError).toHaveBeenCalled();
@@ -153,15 +105,12 @@ describe("OficinaService", () => {
       const oficinaExistente = { id: 1, nome: "Oficina 1" };
       const dadosParaAtualizar = {
         nome: "Oficina Atualizada",
-        horarioInicio: "2025-06-01T09:00:00Z",
-        horarioFim: "2025-06-01T11:00:00Z",
+        diaSemana: "[TERCA]",
       };
       OficinaModel.getById.mockResolvedValue(oficinaExistente);
       OficinaModel.update.mockResolvedValue({
         ...oficinaExistente,
-        ...dadosParaAtualizar,
-        horarioInicio: new Date(dadosParaAtualizar.horarioInicio),
-        horarioFim: new Date(dadosParaAtualizar.horarioFim),
+        ...dadosParaAtualizar
       });
 
       const result = await OficinaService.updateOficina(1, dadosParaAtualizar);
@@ -169,14 +118,11 @@ describe("OficinaService", () => {
       expect(OficinaModel.getById).toHaveBeenCalledWith(1);
       expect(OficinaModel.update).toHaveBeenCalledWith(1, {
         nome: "Oficina Atualizada",
-        horarioInicio: new Date(dadosParaAtualizar.horarioInicio),
-        horarioFim: new Date(dadosParaAtualizar.horarioFim),
+        diaSemana: "[TERCA]",
       });
       expect(result).toEqual({
         ...oficinaExistente,
-        ...dadosParaAtualizar,
-        horarioInicio: new Date(dadosParaAtualizar.horarioInicio),
-        horarioFim: new Date(dadosParaAtualizar.horarioFim),
+        ...dadosParaAtualizar
       });
     });
 
@@ -188,32 +134,6 @@ describe("OficinaService", () => {
       ).rejects.toMatchObject({
         message: "Oficina não encontrada para atualização.",
         statusCode: 404,
-      });
-      expect(logError).toHaveBeenCalled();
-    });
-
-    it("deve lançar erro se horarioInicio inválido na atualização", async () => {
-      const oficinaExistente = { id: 1, nome: "Oficina 1" };
-      OficinaModel.getById.mockResolvedValue(oficinaExistente);
-
-      await expect(
-        OficinaService.updateOficina(1, { horarioInicio: "data-invalida" })
-      ).rejects.toMatchObject({
-        message: 'Formato de "horarioInicio" inválido.',
-        statusCode: 400,
-      });
-      expect(logError).toHaveBeenCalled();
-    });
-
-    it("deve lançar erro se horarioFim inválido na atualização", async () => {
-      const oficinaExistente = { id: 1, nome: "Oficina 1" };
-      OficinaModel.getById.mockResolvedValue(oficinaExistente);
-
-      await expect(
-        OficinaService.updateOficina(1, { horarioFim: "data-invalida" })
-      ).rejects.toMatchObject({
-        message: 'Formato de "horarioFim" inválido.',
-        statusCode: 400,
       });
       expect(logError).toHaveBeenCalled();
     });
