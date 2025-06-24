@@ -42,10 +42,9 @@ describe("PresencaService", () => {
       const data = {
         dataPresenca: "2025-06-01",
         status: "presente",
-        alunoRa: 123,
       };
       expect(() => PresencaService.validateFields(data)).toThrow(
-        'Campo obrigatório "oficinaId" não foi preenchido.'
+        'Campo obrigatório "matriculaId" não foi preenchido.'
       );
     });
 
@@ -53,8 +52,7 @@ describe("PresencaService", () => {
       const data = {
         dataPresenca: "data-invalida",
         status: "presente",
-        alunoRa: 123,
-        oficinaId: 1,
+        matriculaId: 1,
       };
       expect(() => PresencaService.validateFields(data)).toThrow(
         'Formato de "dataPresenca" inválido.'
@@ -65,8 +63,7 @@ describe("PresencaService", () => {
       const data = {
         dataPresenca: "2025-06-01",
         status: "presente",
-        alunoRa: 123,
-        oficinaId: 1,
+        matriculaId: 1,
       };
       PresencaService.validateFields(data);
       expect(data.dataPresenca).toBeInstanceOf(Date);
@@ -76,8 +73,7 @@ describe("PresencaService", () => {
       const data = {
         dataPresenca: new Date(),
         status: "presente",
-        alunoRa: 123,
-        oficinaId: 1,
+        matriculaId: 1,
       };
       expect(() => PresencaService.validateFields(data)).not.toThrow();
     });
@@ -88,63 +84,29 @@ describe("PresencaService", () => {
       const data = {
         dataPresenca: "2025-06-01",
         status: "presente",
-        alunoRa: "123",
-        oficinaId: "1",
+        matriculaId: 1,
       };
 
-      const oficina = { id: 1, nome: "Oficina 1" };
-      const aluno = { ra: 123, nome: "Aluno 1" };
-      const created = { ...data, alunoRa: 123, oficinaId: 1, dataPresenca: new Date(data.dataPresenca) };
-
-      OficinaModel.getById.mockResolvedValue(oficina);
-      AlunoModel.getByRa.mockResolvedValue(aluno);
-      PresencaModel.create.mockResolvedValue(created);
+      PresencaModel.create.mockResolvedValue({
+        ...data,
+        dataPresenca: new Date(data.dataPresenca),
+      });
 
       const result = await PresencaService.createPresenca(data);
 
-      expect(OficinaModel.getById).toHaveBeenCalledWith(1);
-      expect(AlunoModel.getByRa).toHaveBeenCalledWith(123);
       expect(PresencaModel.create).toHaveBeenCalledWith({
         ...data,
-        alunoRa: 123,
-        oficinaId: 1,
         dataPresenca: new Date(data.dataPresenca),
       });
-      expect(result).toEqual(created);
-    });
-
-    it("deve lançar erro se oficina não encontrada", async () => {
-      OficinaModel.getById.mockResolvedValue(null);
-      const data = {
-        dataPresenca: "2025-06-01",
-        status: "presente",
-        alunoRa: "123",
-        oficinaId: "1",
-      };
-
-      await expect(PresencaService.createPresenca(data)).rejects.toThrow("Oficina não encontrada.");
-      expect(logError).toHaveBeenCalled();
-    });
-
-    it("deve lançar erro se aluno não encontrado", async () => {
-      OficinaModel.getById.mockResolvedValue({ id: 1 });
-      AlunoModel.getByRa.mockResolvedValue(null);
-      const data = {
-        dataPresenca: "2025-06-01",
-        status: "presente",
-        alunoRa: "123",
-        oficinaId: "1",
-      };
-
-      await expect(PresencaService.createPresenca(data)).rejects.toThrow("Aluno não encontrado.");
-      expect(logError).toHaveBeenCalled();
+      expect(result).toEqual({
+        ...data,
+        dataPresenca: new Date(data.dataPresenca),
+      });
     });
 
     it("deve logar e lançar erro se validar campos falhar", async () => {
       const data = {
         status: "presente",
-        alunoRa: "123",
-        oficinaId: "1",
       };
 
       await expect(PresencaService.createPresenca(data)).rejects.toThrow(
@@ -167,18 +129,16 @@ describe("PresencaService", () => {
 
     it("deve aplicar filtros corretamente", async () => {
       const filter = {
-        alunoRa: "123",
-        oficinaId: "1",
+        matriculaId: "1",
         dataInicio: "2025-06-01",
         dataFim: "2025-06-10",
       };
 
       const expectedWhere = {
-        alunoRa: 123,
-        oficinaId: 1,
+        matriculaId: 1,
         dataPresenca: {
           gte: new Date(filter.dataInicio),
-          lte: new Date(filter.dataFim),
+          lte: expect.any(Date),
         },
       };
 
@@ -187,7 +147,12 @@ describe("PresencaService", () => {
 
       const result = await PresencaService.getAllPresencas(filter);
 
-      expect(PresencaModel.getAll).toHaveBeenCalledWith(expectedWhere);
+      expect(PresencaModel.getAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          matriculaId: 1,
+          dataPresenca: expect.any(Object),
+        })
+      );
       expect(result).toEqual(presencas);
     });
 

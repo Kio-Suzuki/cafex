@@ -6,7 +6,9 @@ class MatriculaModel {
   }
 
   static async deleteByOficinaId(oficinaId) {
-    return prisma.matricula.deleteMany({ where: { oficinaId } });
+    return prisma.matricula.deleteMany({
+      where: { oficinaId: Number(oficinaId) },
+    });
   }
 
   static async getAll() {

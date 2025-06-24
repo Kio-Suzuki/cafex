@@ -80,11 +80,13 @@ class OficinaService {
 
       if (Array.isArray(alunos)) {
         await MatriculaModel.deleteByOficinaId(Number(id));
-        for (const alunoId of alunos) {
-          await MatriculaModel.create({
-            alunoId,
-            oficinaId: Number(id),
-          });
+        if (alunos.length > 0) {
+          for (const alunoId of alunos) {
+            await MatriculaModel.create({
+              alunoId,
+              oficinaId: Number(id),
+            });
+          }
         }
       }
       return oficinaAtualizada;

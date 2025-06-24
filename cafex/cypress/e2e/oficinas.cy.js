@@ -12,8 +12,7 @@ describe('Oficinas - CRUD', () => {
     cy.get('[data-cy=btn-abrir-cadastro]').click()
     cy.get('[data-cy=input-nome]').type(nomeOficina)
     cy.get('[data-cy=input-descricao]').type(descricao)
-cy.get('[data-cy=select-dia-semana] .v-input__control').click()
-
+    cy.get('[data-cy=select-dia-semana] .v-input__control').click()
     cy.get('.v-list-item-title').should('contain', 'Segunda-feira')
     cy.get('.v-list-item-title').contains('Segunda-feira').click()
     cy.get('.v-list-item-title').contains('Quarta-feira').click()
@@ -24,9 +23,11 @@ cy.get('[data-cy=select-dia-semana] .v-input__control').click()
   })
 
   it('Edita uma oficina existente', () => {
-    cy.contains(nomeOficina).parents('tr').within(() => {
-      cy.get('[data-cy=btn-editar]').first().click()
-    })
+    cy.contains(nomeOficina)
+      .parents('tr')
+      .within(() => {
+        cy.get('[data-cy=btn-editar]').first().click()
+      })
     cy.get('[data-cy=input-nome]').clear().type(nomeOficinaEditada)
     cy.get('[data-cy=input-descricao]').clear().type(descricaoEditada)
     cy.get('[data-cy=btn-confirmar]').click()
@@ -36,9 +37,11 @@ cy.get('[data-cy=select-dia-semana] .v-input__control').click()
   })
 
   it('Exclui uma oficina', () => {
-    cy.contains(nomeOficinaEditada).parents('tr').within(() => {
-      cy.get('[data-cy=btn-excluir]').first().click()
-    })
+    cy.contains(nomeOficinaEditada)
+      .parents('tr')
+      .within(() => {
+        cy.get('[data-cy=btn-excluir]').first().click()
+      })
     cy.contains('Confirmar').click()
     cy.contains('Oficina excluída com sucesso!').should('exist')
     cy.contains(nomeOficinaEditada).should('not.exist')

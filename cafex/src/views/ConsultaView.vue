@@ -25,7 +25,12 @@ function groupByOficinaData(presencas) {
     if (p.status === 'PRESENTE') grupos[key].presentes++
     if (p.status === 'AUSENTE') grupos[key].ausentes++
     if (p.status === 'JUSTIFICADO') grupos[key].justificados++
-    grupos[key].alunos.push({ ra: aluno?.id, nome: aluno?.nome, status: p.status })
+    grupos[key].alunos.push({
+      ra: aluno?.id,
+      nome: aluno?.nome,
+      status: p.status,
+      matriculaId: p.matricula?.id, // <-- Adicionado para garantir seleção correta do status
+    })
   }
   return Object.values(grupos)
 }
@@ -111,6 +116,7 @@ export default {
           style="max-width: 220px"
           clearable
           @update:model-value="buscarPresencas"
+          data-cy="select-filtro-oficina"
         />
         <v-date-input
           v-model="filtroData"
@@ -133,6 +139,7 @@ export default {
         { title: 'Total', key: 'total' },
         { title: '', key: 'actions', align: 'center' },
       ]"
+      data-cy="tabela-consulta-presencas"
     >
       <template v-slot:item.dataPresenca="{ item }">
         {{ new Date(item.dataPresenca).toLocaleDateString() }}
@@ -144,9 +151,13 @@ export default {
           size="small"
           class="mx-1"
           @click="visualizarPresencas(item.oficinaId, item.dataPresenca)"
+          data-cy="btn-visualizar-presencas"
         >
           <v-icon>mdi-eye</v-icon>
         </v-btn>
+      </template>
+      <template v-slot:no-data>
+        <div class="text-center py-4">Sem dados</div>
       </template>
     </v-data-table>
     <PresencaModal

@@ -162,6 +162,7 @@ export default {
               text="Cadastrar Aluno"
               color="success"
               v-bind="activatorProps"
+              data-cy="btn-abrir-cadastro-aluno"
             ></v-btn>
           </template>
 
@@ -173,20 +174,28 @@ export default {
                     v-model="params.nome"
                     label="Nome Completo do Aluno*"
                     required
+                    data-cy="input-nome-aluno"
                   ></v-text-field>
                 </v-col>
               </v-row>
               <small class="text-caption text-medium-emphasis">*indica campos obrigatórios</small>
             </v-card-text>
-
             <v-divider></v-divider>
-
             <v-card-actions>
               <v-spacer></v-spacer>
-
-              <v-btn text="Cancelar" variant="plain" @click="closeModal"></v-btn>
-
-              <v-btn color="primary" text="Confirmar" variant="tonal" @click="setItem"></v-btn>
+              <v-btn
+                text="Cancelar"
+                variant="plain"
+                @click="closeModal"
+                data-cy="btn-cancelar-aluno"
+              ></v-btn>
+              <v-btn
+                color="primary"
+                text="Confirmar"
+                variant="tonal"
+                @click="setItem"
+                data-cy="btn-confirmar-aluno"
+              ></v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -208,6 +217,7 @@ export default {
                 style="color: #000 !important"
                 class="mx-1"
                 @click="openEditItem(item)"
+                data-cy="btn-editar-aluno"
               >
                 <v-icon color="grey-darken-4"> mdi-pencil </v-icon>
               </v-btn>
@@ -224,6 +234,7 @@ export default {
                 style="color: #000 !important"
                 class="mx-1"
                 @click="confirmDelete(item)"
+                data-cy="btn-excluir-aluno"
               >
                 <v-icon color="grey-darken-4"> mdi-delete </v-icon>
               </v-btn>
@@ -231,6 +242,9 @@ export default {
             <span>Excluir Aluno</span>
           </v-tooltip>
         </v-col>
+      </template>
+      <template v-slot:no-data>
+        <div class="text-center py-4">Sem dados</div>
       </template>
     </v-data-table>
   </v-card>

@@ -80,7 +80,11 @@ export default {
     },
     async getAlunosMatriculados(oficinaId) {
       const res = await axios.get(`/matriculas?oficinaId=${oficinaId}`)
-      this.alunosMatriculados = res.data.map((m) => m.aluno)
+      const matriculados = res.data
+        .filter((m) => m.oficinaId === oficinaId && m.aluno && m.aluno.id)
+        .map((m) => m.aluno)
+      this.alunosMatriculados = matriculados
+      this.params.alunos = matriculados.map((a) => a.id)
     },
     setItem() {
       this.dialog = false
@@ -120,7 +124,7 @@ export default {
 
       return
     },
-    openEditItem(item) {
+    async openEditItem(item) {
       this.isEdit = true
       this.itemEditId = item.id
 
@@ -128,9 +132,11 @@ export default {
       this.params.descricao = item.descricao
       this.params.diaSemana = item.diaSemana
 
-      this.getAlunosDisponiveis()
-      this.getAlunosMatriculados(item.id)
-      this.params.alunos = this.alunosMatriculados.map((a) => a.id)
+      this.alunosMatriculados = []
+      this.params.alunos = []
+
+      await this.getAlunosDisponiveis()
+      await this.getAlunosMatriculados(item.id)
 
       this.dialog = true
     },
@@ -172,6 +178,7 @@ export default {
       this.params.descricao = null
       this.params.diaSemana = null
       this.params.alunos = []
+      this.alunosMatriculados = []
 
       this.dialog = false
     },
@@ -406,6 +413,7 @@ export default {
                       filtrarAlunosDisponiveis().length &&
                       adicionarAluno(filtrarAlunosDisponiveis()[0].id)
                     "
+                    data-cy="input-busca-aluno"
                   ></v-text-field>
                   <div
                     v-if="alunosBusca && filtrarAlunosDisponiveis().length"
@@ -471,26 +479,12 @@ export default {
                 style="color: #000 !important"
                 class="mx-1"
                 @click="openEditItem(item)"
-              >
-                <v-icon color="grey-darken-4"> mdi-pencil </v-icon>
-              </v-btn>
-            </template>
-            <span>Editar Oficina</span>
-          </v-tooltip>
-          <v-tooltip location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                icon="mdi-pencil"
-                color="orange-darken-2"
-                size="small"
-                class="mx-1"
-                @click="openEditItem(item)"
                 data-cy="btn-editar"
               >
                 <v-icon color="grey-darken-4"> mdi-pencil </v-icon>
               </v-btn>
             </template>
-            <span>Excluir Oficina</span>
+            <span>Editar Oficina</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
@@ -501,13 +495,33 @@ export default {
                 class="mx-1"
                 @click="confirmDelete(item)"
                 data-cy="btn-excluir"
+                v-bind="props"
               >
                 <v-icon color="grey-darken-4"> mdi-delete </v-icon>
               </v-btn>
             </template>
-            <span>Presenças</span>
+            <span>Excluir Oficina</span>
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                icon="mdi-account-check"
+                color="primary"
+                size="small"
+                class="mx-1"
+                @click="abrirPresencaModal(item)"
+                data-cy="btn-marcar-presenca"
+                v-bind="props"
+              >
+                <v-icon color="grey-darken-4"> mdi-account-check </v-icon>
+              </v-btn>
+            </template>
+            <span>Marcar Presença</span>
           </v-tooltip>
         </v-col>
+      </template>
+      <template v-slot:no-data>
+        <div class="text-center py-4">Sem dados</div>
       </template>
     </v-data-table>
     <PresencaModal
