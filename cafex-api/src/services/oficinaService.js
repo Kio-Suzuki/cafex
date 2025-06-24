@@ -79,14 +79,33 @@ class OficinaService {
       );
 
       if (Array.isArray(alunos)) {
-        await MatriculaModel.deleteByOficinaId(Number(id));
-        if (alunos.length > 0) {
-          for (const alunoId of alunos) {
-            await MatriculaModel.create({
-              alunoId,
-              oficinaId: Number(id),
-            });
+        const matriculasAtuais = await MatriculaModel.getByOficinaId(
+          Number(id)
+        );
+        const alunosAtuais = matriculasAtuais.map((m) => m.alunoId);
+        const alunosNovos = alunos;
+
+        const alunosParaRemover = alunosAtuais.filter(
+          (alunoId) => !alunosNovos.includes(alunoId)
+        );
+        for (const alunoId of alunosParaRemover) {
+          const matricula = await MatriculaModel.findByAlunoOficina(
+            alunoId,
+            Number(id)
+          );
+          if (matricula) {
+            await MatriculaModel.delete(matricula.id);
           }
+        }
+
+        const alunosParaAdicionar = alunosNovos.filter(
+          (alunoId) => !alunosAtuais.includes(alunoId)
+        );
+        for (const alunoId of alunosParaAdicionar) {
+          await MatriculaModel.create({
+            alunoId,
+            oficinaId: Number(id),
+          });
         }
       }
       return oficinaAtualizada;

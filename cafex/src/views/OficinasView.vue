@@ -195,10 +195,9 @@ export default {
       return `${day}/${month}/${year}`
     },
     async abrirPresencaModal(oficina) {
-      // Verificar se hoje está entre os dias da semana da oficina
       const hoje = new Date()
-      const diaHoje = hoje.getDay() // 0 = Domingo, 1 = Segunda, etc.
-
+      const diaHoje = hoje.getDay();
+      
       const diasSemanaMap = {
         0: 'DOMINGO',
         1: 'SEGUNDA',
