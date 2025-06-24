@@ -29,7 +29,7 @@ function groupByOficinaData(presencas) {
       ra: aluno?.id,
       nome: aluno?.nome,
       status: p.status,
-      matriculaId: p.matricula?.id, // <-- Adicionado para garantir seleção correta do status
+      matriculaId: p.matricula?.id,
     })
   }
   return Object.values(grupos)
