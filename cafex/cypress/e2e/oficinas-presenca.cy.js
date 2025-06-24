@@ -77,4 +77,29 @@ describe('Fluxo completo de presença', () => {
       cy.contains('Presente').should('exist')
     })
   })
+
+  
+  it('Exclui a oficina criada', () => {
+    cy.visit('/')
+    cy.contains(nomeOficina)
+      .parents('tr')
+      .within(() => {
+        cy.get('[data-cy=btn-excluir]').first().click()
+      })
+    cy.contains('Confirmar').click()
+    cy.contains('Oficina excluída com sucesso!').should('exist')
+    cy.contains(nomeOficina).should('not.exist')
+  })
+
+    it('Exclui o aluno cadastrado', () => {
+        cy.visit('/alunos')
+        cy.contains(nomeAluno)
+        .parents('tr')
+        .within(() => {
+            cy.get('[data-cy=btn-excluir-aluno]').first().click()
+        })
+        cy.contains('Confirmar').click()
+        cy.contains('Aluno excluído com sucesso!').should('exist')
+        cy.contains(nomeAluno).should('not.exist')
+    })
 })
