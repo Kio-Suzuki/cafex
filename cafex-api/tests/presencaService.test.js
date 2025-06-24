@@ -130,12 +130,16 @@ describe("PresencaService", () => {
     it("deve aplicar filtros corretamente", async () => {
       const filter = {
         matriculaId: "1",
+        oficinaId: "2",
         dataInicio: "2025-06-01",
         dataFim: "2025-06-10",
       };
 
       const expectedWhere = {
         matriculaId: 1,
+        matricula: {
+          oficinaId: 2,
+        },
         dataPresenca: {
           gte: new Date(filter.dataInicio),
           lte: expect.any(Date),
@@ -150,6 +154,9 @@ describe("PresencaService", () => {
       expect(PresencaModel.getAll).toHaveBeenCalledWith(
         expect.objectContaining({
           matriculaId: 1,
+          matricula: expect.objectContaining({
+            oficinaId: 2,
+          }),
           dataPresenca: expect.any(Object),
         })
       );

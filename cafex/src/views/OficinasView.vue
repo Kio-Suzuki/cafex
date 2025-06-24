@@ -195,8 +195,29 @@ export default {
       return `${day}/${month}/${year}`
     },
     async abrirPresencaModal(oficina) {
-      this.oficinaSelecionada = oficina
+      // Verificar se hoje está entre os dias da semana da oficina
       const hoje = new Date()
+      const diaHoje = hoje.getDay() // 0 = Domingo, 1 = Segunda, etc.
+
+      const diasSemanaMap = {
+        0: 'DOMINGO',
+        1: 'SEGUNDA',
+        2: 'TERCA',
+        3: 'QUARTA',
+        4: 'QUINTA',
+        5: 'SEXTA',
+        6: 'SABADO'
+      }
+
+      const diaHojeEnum = diasSemanaMap[diaHoje]
+
+      if (!oficina.diaSemana || !oficina.diaSemana.includes(diaHojeEnum)) {
+        const diasOficina = this.getDiasSemana(oficina.diaSemana, 'nenhum dia')
+        this.$toast.error(`Esta oficina acontece apenas: ${diasOficina}. Hoje é ${this.diaSemanaOptions.find(d => d.value === diaHojeEnum)?.text || 'dia inválido'}.`)
+        return
+      }
+
+      this.oficinaSelecionada = oficina
       hoje.setUTCHours(0, 0, 0, 0)
       const dataISO = hoje.toISOString()
       let visualizacao = false
