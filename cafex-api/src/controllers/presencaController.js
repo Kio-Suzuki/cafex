@@ -30,9 +30,10 @@ class PresencaController {
 
   static async listAllPresencas(req, res, next) {
     try {
-      const { matriculaId, dataInicio, dataFim } = req.query;
+      const { matriculaId, oficinaId, dataInicio, dataFim } = req.query;
       const filter = {
         matriculaId: matriculaId ? parseInt(matriculaId) : undefined,
+        oficinaId: oficinaId ? parseInt(oficinaId) : undefined,
         dataInicio: dataInicio || undefined,
         dataFim: dataFim || undefined,
       };

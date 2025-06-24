@@ -91,6 +91,20 @@ class MatriculaService {
       throw err;
     }
   }
+
+  static async getMatriculasByOficinaId(oficinaId) {
+    try {
+      if (!oficinaId) {
+        const error = new Error("ID da oficina é obrigatório.");
+        error.statusCode = 400;
+        throw error;
+      }
+      return await MatriculaModel.getByOficinaId(oficinaId);
+    } catch (err) {
+      logError(err);
+      throw err;
+    }
+  }
 }
 
 export default MatriculaService;

@@ -45,6 +45,15 @@ class MatriculaController {
       res.status(err.statusCode || 500).json({ error: err.message });
     }
   }
+
+  static async getByOficinaId(req, res) {
+    try {
+      const matriculas = await MatriculaService.getMatriculasByOficinaId(req.params.oficinaId);
+      res.json(matriculas);
+    } catch (err) {
+      res.status(err.statusCode || 500).json({ error: err.message });
+    }
+  }
 }
 
 export default MatriculaController;

@@ -47,10 +47,10 @@ presencaRouter.post("/presencas", PresencaController.createPresenca);
  *     tags: [Presenca]
  *     parameters:
  *       - in: query
- *         name: alunoRa
+ *         name: matriculaId
  *         schema:
  *           type: integer
- *         description: RA do aluno
+ *         description: ID da matrícula
  *       - in: query
  *         name: oficinaId
  *         schema:

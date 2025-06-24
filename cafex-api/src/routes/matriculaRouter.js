@@ -115,4 +115,25 @@ matriculaRouter.put("/matriculas/:id", MatriculaController.update);
  */
 matriculaRouter.delete("/matriculas/:id", MatriculaController.delete);
 
+/**
+ * @swagger
+ * /matriculas/oficina/{oficinaId}:
+ *   get:
+ *     summary: Busca matrículas por ID da oficina
+ *     tags: [Matrícula]
+ *     parameters:
+ *       - in: path
+ *         name: oficinaId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID da oficina
+ *     responses:
+ *       200:
+ *         description: Lista de matrículas da oficina
+ *       404:
+ *         description: Oficina não encontrada
+ */
+matriculaRouter.get("/matriculas/oficina/:oficinaId", MatriculaController.getByOficinaId);
+
 export default matriculaRouter;

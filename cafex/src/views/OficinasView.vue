@@ -79,7 +79,7 @@ export default {
       }
     },
     async getAlunosMatriculados(oficinaId) {
-      const res = await axios.get(`/matriculas?oficinaId=${oficinaId}`)
+      const res = await axios.get(`/matriculas/oficina/${oficinaId}`)
       const matriculados = res.data
         .filter((m) => m.oficinaId === oficinaId && m.aluno && m.aluno.id)
         .map((m) => m.aluno)
@@ -202,16 +202,18 @@ export default {
       let visualizacao = false
       let presencasMap = {}
       try {
-        const resMatriculas = await axios.get(`/matriculas?oficinaId=${oficina.id}`)
+        const resMatriculas = await axios.get(`/matriculas/oficina/${oficina.id}`)
         this.alunosOficina = resMatriculas.data.map((m) => ({
           id: m.aluno.id,
           ra: m.aluno.ra,
           nome: m.aluno.nome,
           matriculaId: m.id,
         }))
+
         const resPresencas = await axios.get(
           `/presencas?oficinaId=${oficina.id}&dataInicio=${dataISO}&dataFim=${dataISO}`,
         )
+
         presencasMap = Object.fromEntries(resPresencas.data.map((p) => [p.matricula?.id, p.status]))
         this.presencasOficina = this.alunosOficina.map((aluno) => ({
           ra: aluno.ra,
@@ -219,8 +221,12 @@ export default {
           matriculaId: aluno.matriculaId,
           status: presencasMap[aluno.matriculaId] || '',
         }))
-        visualizacao = resPresencas.data.length > 0
+
+        const presencasPreenchidas = this.presencasOficina.filter(p => p.status !== '')
+        visualizacao = presencasPreenchidas.length === this.alunosOficina.length && this.alunosOficina.length > 0
+
       } catch (e) {
+        console.error('Erro ao carregar dados da presença:', e)
         this.alunosOficina = []
         this.presencasOficina = []
       }

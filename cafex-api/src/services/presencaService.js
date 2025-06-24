@@ -89,6 +89,12 @@ class PresencaService {
         where.matriculaId = parseInt(filter.matriculaId);
       }
 
+      if (filter.oficinaId) {
+        where.matricula = {
+          oficinaId: parseInt(filter.oficinaId),
+        };
+      }
+
       if (filter.dataInicio || filter.dataFim) {
         where.dataPresenca = {};
         if (filter.dataInicio) {

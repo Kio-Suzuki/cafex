@@ -57,6 +57,19 @@ class MatriculaModel {
       where: { alunoId, oficinaId },
     });
   }
+
+  static async getByOficinaId(oficinaId) {
+    return await prisma.matricula.findMany({
+      where: {
+        oficinaId: Number(oficinaId),
+      },
+      include: {
+        aluno: true,
+        oficina: true,
+        presencas: true,
+      },
+    });
+  }
 }
 
 export default MatriculaModel;
