@@ -1,21 +1,22 @@
 import OficinaModel from "../models/oficinaModel.js";
+import MatriculaModel from "../models/matriculaModel.js";
 import logError from "../logs/logError.js";
 
 class OficinaService {
   static async createOficina(dadosDaOficina) {
     try {
-      if (
-        !dadosDaOficina.nome ||
-        !dadosDaOficina.diaSemana
-      ) {
-        const error = new Error(
-          'Os campos "nome" e "diaSemana" são obrigatórios.'
-        );
-        error.statusCode = 400;
-        throw error;
-      }
+      const { alunos, ...oficinaData } = dadosDaOficina;
+      const oficina = await OficinaModel.create(oficinaData);
 
-      return await OficinaModel.create(dadosDaOficina);
+      if (Array.isArray(alunos) && alunos.length > 0) {
+        for (const alunoId of alunos) {
+          await MatriculaModel.create({
+            alunoId,
+            oficinaId: oficina.id,
+          });
+        }
+      }
+      return oficina;
     } catch (err) {
       logError(err);
       throw err;
@@ -48,14 +49,14 @@ class OficinaService {
 
   static async getQtdAlunos(id) {
     try {
-      //todo finalizar apos mudanca do banco
-      // const oficina = await OficinaModel.getById(Number(id));
-      // if (!oficina) {
-      //   const error = new Error("Oficina não encontrada.");
-      //   error.statusCode = 404;
-      //   throw error;
-      // }
-      // return oficina;
+      const oficina = await OficinaModel.getById(Number(id));
+      if (!oficina) {
+        const error = new Error("Oficina não encontrada.");
+        error.statusCode = 404;
+        throw error;
+      }
+      const matriculas = await MatriculaModel.getAlunosByOficinaId(Number(id));
+      return matriculas.length;
     } catch (err) {
       logError(err);
       throw err;
@@ -71,7 +72,24 @@ class OficinaService {
         throw error;
       }
 
-      return await OficinaModel.update(Number(id), dadosParaAtualizar);
+      const { alunos, ...oficinaData } = dadosParaAtualizar;
+      const oficinaAtualizada = await OficinaModel.update(
+        Number(id),
+        oficinaData
+      );
+
+      if (Array.isArray(alunos)) {
+        await MatriculaModel.deleteByOficinaId(Number(id));
+        if (alunos.length > 0) {
+          for (const alunoId of alunos) {
+            await MatriculaModel.create({
+              alunoId,
+              oficinaId: Number(id),
+            });
+          }
+        }
+      }
+      return oficinaAtualizada;
     } catch (err) {
       logError(err);
       throw err;

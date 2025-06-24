@@ -19,6 +19,7 @@ export default {
         nome: null,
         descricao: null,
         diaSemana: null,
+        alunos: [],
       },
       presencaModal: false,
       presencaModalVisualizacao: false,
@@ -33,37 +34,71 @@ export default {
         { text: 'Quinta-feira', value: 'QUINTA' },
         { text: 'Sexta-feira', value: 'SEXTA' },
         { text: 'Sábado', value: 'SABADO' },
-      ]
+      ],
+      alunosDisponiveis: [],
+      alunosBusca: '',
+      alunosMatriculados: [],
+      qtdAlunosPorOficina: {},
     }
   },
   methods: {
     headers() {
       return [
-        { title: 'Nome',                  key: 'nome',        align: 'start'  },
-        { title: 'Descrição',             key: 'descricao',   align: 'start'  },
-        { title: 'Dias',                  key: 'diaSemana',   align: 'start'  },
-        { title: 'Quantidade de Alunos',  key: 'qtdAlunos',   align: 'start'  },
-        { title: '',                      key: 'actions',     align: 'center' },
+        { title: 'Nome', key: 'nome', align: 'start' },
+        { title: 'Descrição', key: 'descricao', align: 'start' },
+        { title: 'Dias', key: 'diaSemana', align: 'start' },
+        { title: 'Quantidade de Alunos', key: 'qtdAlunos', align: 'start' },
+        { title: '', key: 'actions', align: 'center' },
       ]
     },
     async getItems() {
-      await axios
-        .get('/oficinas')
-        .then((res) => {
-          const { data } = res
-          console.log(data)
-          this.items = data
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      try {
+        const res = await axios.get('/oficinas')
+        this.items = res.data
+        for (const oficina of res.data) {
+          try {
+            const resQtd = await axios.get(`/oficinas/${oficina.id}/getQtdAlunos`)
+            this.qtdAlunosPorOficina[oficina.id] = resQtd.data ?? 0
+          } catch {
+            this.qtdAlunosPorOficina[oficina.id] = '-'
+          }
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    getQtdAlunos(oficinaId) {
+      return this.qtdAlunosPorOficina[oficinaId] ?? '-'
+    },
+    async getAlunosDisponiveis() {
+      try {
+        const res = await axios.get('/alunos')
+        this.alunosDisponiveis = res.data
+      } catch (e) {
+        this.alunosDisponiveis = []
+      }
+    },
+    async getAlunosMatriculados(oficinaId) {
+      const res = await axios.get(`/matriculas?oficinaId=${oficinaId}`)
+      const matriculados = res.data
+        .filter((m) => m.oficinaId === oficinaId && m.aluno && m.aluno.id)
+        .map((m) => m.aluno)
+      this.alunosMatriculados = matriculados
+      this.params.alunos = matriculados.map((a) => a.id)
     },
     setItem() {
       this.dialog = false
 
+      const payload = {
+        nome: this.params.nome,
+        descricao: this.params.descricao,
+        diaSemana: this.params.diaSemana,
+        alunos: this.params.alunos,
+      }
+
       if (this.isEdit) {
         axios
-          .put(`/oficinas/${this.itemEditId}`, this.params)
+          .put(`/oficinas/${this.itemEditId}`, payload)
           .then((res) => {
             this.$toast.success('Oficina editada com sucesso!')
             this.getItems()
@@ -77,7 +112,7 @@ export default {
       }
 
       axios
-        .post('/oficinas', this.params)
+        .post('/oficinas', payload)
         .then((res) => {
           this.$toast.success('Oficina cadastrada com sucesso!')
           this.getItems()
@@ -89,7 +124,7 @@ export default {
 
       return
     },
-    openEditItem(item) {
+    async openEditItem(item) {
       this.isEdit = true
       this.itemEditId = item.id
 
@@ -97,6 +132,23 @@ export default {
       this.params.descricao = item.descricao
       this.params.diaSemana = item.diaSemana
 
+      this.alunosMatriculados = []
+      this.params.alunos = []
+
+      await this.getAlunosDisponiveis()
+      await this.getAlunosMatriculados(item.id)
+
+      this.dialog = true
+    },
+    async openCreateItem() {
+      this.isEdit = false
+      this.itemEditId = null
+      this.params.nome = null
+      this.params.descricao = null
+      this.params.diaSemana = null
+      this.params.alunos = []
+      this.alunosMatriculados = []
+      await this.getAlunosDisponiveis()
       this.dialog = true
     },
     confirmDelete(item) {
@@ -125,6 +177,8 @@ export default {
       this.params.nome = null
       this.params.descricao = null
       this.params.diaSemana = null
+      this.params.alunos = []
+      this.alunosMatriculados = []
 
       this.dialog = false
     },
@@ -148,17 +202,22 @@ export default {
       let visualizacao = false
       let presencasMap = {}
       try {
-        const resAlunos = await axios.get(`/alunos?oficinaId=${oficina.id}`)
-        this.alunosOficina = resAlunos.data
-        // Busca presenças do dia
+        const resMatriculas = await axios.get(`/matriculas?oficinaId=${oficina.id}`)
+        this.alunosOficina = resMatriculas.data.map((m) => ({
+          id: m.aluno.id,
+          ra: m.aluno.ra,
+          nome: m.aluno.nome,
+          matriculaId: m.id,
+        }))
         const resPresencas = await axios.get(
           `/presencas?oficinaId=${oficina.id}&dataInicio=${dataISO}&dataFim=${dataISO}`,
         )
-        // Cria um map ra -> status
-        presencasMap = Object.fromEntries(resPresencas.data.map((p) => [p.alunoRa, p.status]))
+        presencasMap = Object.fromEntries(resPresencas.data.map((p) => [p.matricula?.id, p.status]))
         this.presencasOficina = this.alunosOficina.map((aluno) => ({
           ra: aluno.ra,
-          status: presencasMap[aluno.ra] || '',
+          nome: aluno.nome,
+          matriculaId: aluno.matriculaId,
+          status: presencasMap[aluno.matriculaId] || '',
         }))
         visualizacao = resPresencas.data.length > 0
       } catch (e) {
@@ -168,16 +227,19 @@ export default {
       this.presencaModalVisualizacao = visualizacao
       this.presencaModal = true
     },
+
     async salvarPresencas(presencas) {
       try {
         const dataPresenca = new Date().toISOString()
         const presencasCompletas = presencas.map((p) => ({
-          alunoRa: p.ra,
+          matriculaId: p.matriculaId,
           status: p.status,
-          oficinaId: this.oficinaSelecionada.id,
           dataPresenca,
         }))
-
+        if (presencasCompletas.some((p) => !p.matriculaId)) {
+          this.$toast.error('Erro: algum aluno não está matriculado na oficina!')
+          return
+        }
         await axios.post('/presencas/multiplas', {
           presencas: presencasCompletas,
         })
@@ -187,37 +249,43 @@ export default {
       }
       this.presencaModal = false
     },
-    getDiasSemana(diaSemana, ret = '-'){
-      if(!diaSemana || !diaSemana?.length){
-        return ret;
+    getDiasSemana(diaSemana, ret = '-') {
+      if (!diaSemana || !diaSemana?.length) {
+        return ret
       }
-      let string = '';
-      diaSemana.forEach(diaEnum => {
-        this.diaSemanaOptions.forEach(diaSemanaOption => {
-          if(diaSemanaOption.value == diaEnum){
-            string += diaSemanaOption.text + ', ';
+      let string = ''
+      diaSemana.forEach((diaEnum) => {
+        this.diaSemanaOptions.forEach((diaSemanaOption) => {
+          if (diaSemanaOption.value == diaEnum) {
+            string += diaSemanaOption.text + ', '
           }
-        });
-      });
-      return string.slice(0, -2);
+        })
+      })
+      return string.slice(0, -2)
     },
-    async getQtdAlunos(oficinaId){
-       axios
-        .get(`/oficinas/${oficinaId}/getQtdAlunos`)
-        .then((res) => {
-          let result = 0;
-          if(res?.data){
-            result = res.data;
-          }
-          return result;
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
+    filtrarAlunosDisponiveis() {
+      const busca = this.alunosBusca?.toLowerCase() || ''
+      return this.alunosDisponiveis.filter(
+        (a) =>
+          (!busca || a.nome.toLowerCase().includes(busca)) && !this.params.alunos.includes(a.id),
+      )
+    },
+    adicionarAluno(id) {
+      if (!this.params.alunos.includes(id)) {
+        this.params.alunos.push(id)
+        const aluno = this.alunosDisponiveis.find((a) => a.id === id)
+        if (aluno) this.alunosMatriculados.push(aluno)
+      }
+      this.alunosBusca = ''
+    },
+    removerAluno(id) {
+      this.params.alunos = this.params.alunos.filter((aid) => aid !== id)
+      this.alunosMatriculados = this.alunosMatriculados.filter((a) => a.id !== id)
+    },
   },
   async created() {
     await this.getItems()
+    await this.getAlunosDisponiveis()
   },
 }
 </script>
@@ -273,6 +341,8 @@ export default {
               text="Cadastrar Oficina"
               color="success"
               v-bind="activatorProps"
+              @click="openCreateItem"
+              data-cy="btn-abrir-cadastro"
             ></v-btn>
           </template>
 
@@ -284,6 +354,7 @@ export default {
                     v-model="params.nome"
                     label="Nome da Oficina*"
                     required
+                    data-cy="input-nome"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -293,6 +364,7 @@ export default {
                     v-model="params.descricao"
                     label="Descrição"
                     required
+                    data-cy="input-descricao"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -309,20 +381,76 @@ export default {
                     hide-details
                     multiple
                     required
+                    data-cy="select-dia-semana"
                   />
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <div style="margin-bottom: 4px; font-weight: 500">Alunos associados</div>
+                  <div style="width: 100%; display: flex; flex-wrap: wrap">
+                    <v-chip
+                      v-for="aluno in alunosMatriculados"
+                      :key="aluno.id"
+                      class="ma-1"
+                      closable
+                      @click:close="removerAluno(aluno.id)"
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                    >
+                      {{ aluno.nome }}
+                    </v-chip>
+                  </div>
+                  <v-text-field
+                    v-model="alunosBusca"
+                    label="Buscar e adicionar aluno"
+                    prepend-inner-icon="mdi-magnify"
+                    hide-details
+                    dense
+                    style="width: 100%; margin-top: 8px"
+                    @keydown.enter.prevent="
+                      filtrarAlunosDisponiveis().length &&
+                      adicionarAluno(filtrarAlunosDisponiveis()[0].id)
+                    "
+                    data-cy="input-busca-aluno"
+                  ></v-text-field>
+                  <div
+                    v-if="alunosBusca && filtrarAlunosDisponiveis().length"
+                    style="max-height: 120px; overflow-y: auto; width: 100%"
+                  >
+                    <v-list density="compact">
+                      <v-list-item
+                        v-for="aluno in filtrarAlunosDisponiveis()"
+                        :key="aluno.id"
+                        @click="adicionarAluno(aluno.id)"
+                        style="cursor: pointer"
+                      >
+                        <v-list-item-title>{{ aluno.nome }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </div>
                 </v-col>
               </v-row>
               <small class="text-caption text-medium-emphasis">*indica campos obrigatórios</small>
             </v-card-text>
-
             <v-divider></v-divider>
-
             <v-card-actions>
               <v-spacer></v-spacer>
-
-              <v-btn color="error" text="Cancelar" variant="plain" @click="closeModal"></v-btn>
-
-              <v-btn color="primary" text="Confirmar" variant="tonal" @click="setItem"></v-btn>
+              <v-btn
+                color="error"
+                text="Cancelar"
+                variant="plain"
+                @click="closeModal"
+                data-cy="btn-cancelar"
+              ></v-btn>
+              <v-btn
+                color="primary"
+                text="Confirmar"
+                variant="tonal"
+                @click="setItem"
+                data-cy="btn-confirmar"
+              ></v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -337,7 +465,7 @@ export default {
       </template>
 
       <template v-slot:item.qtdAlunos="{ item }">
-        {{ getQtdAlunos(item?.id) }}
+        {{ getQtdAlunos(item.id) }}
       </template>
       <template v-slot:item.actions="{ item }">
         <v-col cols="auto" class="d-flex justify-center">
@@ -351,6 +479,7 @@ export default {
                 style="color: #000 !important"
                 class="mx-1"
                 @click="openEditItem(item)"
+                data-cy="btn-editar"
               >
                 <v-icon color="grey-darken-4"> mdi-pencil </v-icon>
               </v-btn>
@@ -360,13 +489,13 @@ export default {
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-bind="props"
                 icon="mdi-delete"
                 color="orange-darken-2"
                 size="small"
-                style="color: #000 !important"
                 class="mx-1"
                 @click="confirmDelete(item)"
+                data-cy="btn-excluir"
+                v-bind="props"
               >
                 <v-icon color="grey-darken-4"> mdi-delete </v-icon>
               </v-btn>
@@ -376,19 +505,23 @@ export default {
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-bind="props"
-                icon="mdi-account-group"
+                icon="mdi-account-check"
                 color="primary"
                 size="small"
                 class="mx-1"
                 @click="abrirPresencaModal(item)"
+                data-cy="btn-marcar-presenca"
+                v-bind="props"
               >
-                <v-icon color="white">mdi-account-group</v-icon>
+                <v-icon color="grey-darken-4"> mdi-account-check </v-icon>
               </v-btn>
             </template>
-            <span>Presenças</span>
+            <span>Marcar Presença</span>
           </v-tooltip>
         </v-col>
+      </template>
+      <template v-slot:no-data>
+        <div class="text-center py-4">Sem dados</div>
       </template>
     </v-data-table>
     <PresencaModal

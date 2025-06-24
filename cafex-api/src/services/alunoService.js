@@ -4,7 +4,7 @@ import logError from "../logs/logError.js";
 
 class AlunoService {
   static validateFields(data) {
-    const requiredFields = ["ra", "nome"];
+    const requiredFields = ["nome"];
     for (const field of requiredFields) {
       if (!data[field]) {
         const error = new Error(
@@ -36,9 +36,9 @@ class AlunoService {
     }
   }
 
-  static async getAlunoByRa(ra) {
+  static async getAlunoById(id) {
     try {
-      const aluno = await AlunoModel.getByRa(ra);
+      const aluno = await AlunoModel.getById(id);
       if (!aluno) {
         const error = new Error("Aluno não encontrado.");
         error.statusCode = 404;
@@ -51,31 +51,31 @@ class AlunoService {
     }
   }
 
-  static async updateAluno(ra, data) {
+  static async updateAluno(id, data) {
     try {
-      const aluno = await AlunoModel.getByRa(ra);
+      const aluno = await AlunoModel.getById(id);
       if (!aluno) {
         const error = new Error("Aluno não encontrado para atualização.");
         error.statusCode = 404;
         throw error;
       }
 
-      return await AlunoModel.update(ra, data);
+      return await AlunoModel.update(id, data);
     } catch (err) {
       logError(err);
       throw err;
     }
   }
 
-  static async deleteAluno(ra) {
+  static async deleteAluno(id) {
     try {
-      const aluno = await AlunoModel.getByRa(ra);
+      const aluno = await AlunoModel.getById(id);
       if (!aluno) {
         const error = new Error("Aluno não encontrado para exclusão.");
         error.statusCode = 404;
         throw error;
       }
-      return await AlunoModel.delete(ra);
+      return await AlunoModel.delete(id);
     } catch (err) {
       logError(err);
       throw err;

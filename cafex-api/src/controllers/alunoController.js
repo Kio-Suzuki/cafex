@@ -1,4 +1,4 @@
-import AlunoService from "../services/alunoService.js";
+import AlunoService from '../services/alunoService.js';
 
 class AlunoController {
   static async createAluno(req, res, next) {
@@ -19,10 +19,13 @@ class AlunoController {
     }
   }
 
-  static async getAlunoByRa(req, res, next) {
+  static async getAlunoById(req, res, next) {
     try {
-      const { ra } = req.params;
-      const aluno = await AlunoService.getAlunoByRa(Number(ra));
+      const { id } = req.params;
+      const aluno = await AlunoService.getAlunoById(Number(id));
+      if (!aluno) {
+        return res.status(404).json({ message: 'Aluno não encontrado' });
+      }
       res.status(200).json(aluno);
     } catch (error) {
       next(error);
@@ -31,8 +34,8 @@ class AlunoController {
 
   static async updateAluno(req, res, next) {
     try {
-      const { ra } = req.params;
-      const aluno = await AlunoService.updateAluno(Number(ra), req.body);
+      const { id } = req.params;
+      const aluno = await AlunoService.updateAluno(Number(id), req.body);
       res.status(200).json(aluno);
     } catch (error) {
       next(error);
@@ -41,8 +44,8 @@ class AlunoController {
 
   static async deleteAluno(req, res, next) {
     try {
-      const { ra } = req.params;
-      await AlunoService.deleteAluno(Number(ra));
+      const { id } = req.params;
+      await AlunoService.deleteAluno(Number(id));
       res.status(204).send();
     } catch (error) {
       next(error);

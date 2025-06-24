@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider    = "postgresql"
-  url         = env("DATABASE_URL")
-  directUrl   = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum StatusPresenca {
@@ -25,39 +25,39 @@ enum DiaSemana {
 }
 
 model Oficina {
-  id            Int           @id @default(autoincrement())
-  nome          String
-  descricao     String?
-  diaSemana     DiaSemana
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  presencas     Presenca[]
+  id         Int         @id @default(autoincrement())
+  nome       String
+  descricao  String?
+  diaSemana  DiaSemana[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  matriculas Matricula[]
 }
 
 model Aluno {
-  ra        Int        @id
-  nome      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  presencas Presenca[]
+  id         Int         @id @default(autoincrement())
+  nome       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  matriculas Matricula[]
+}
+
+model Matricula {
+  id            Int        @id @default(autoincrement())
+  aluno         Aluno      @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  alunoId       Int
+  oficina       Oficina    @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  oficinaId     Int
+  dataMatricula DateTime   @default(now())
+  presencas     Presenca[]
 }
 
 model Presenca {
   id           Int            @id @default(autoincrement())
   dataPresenca DateTime
   status       StatusPresenca
-  observacoes  String?
+  matricula    Matricula      @relation(fields: [matriculaId], references: [id], onDelete: Cascade)
+  matriculaId  Int
 
-  alunoRa Int
-  aluno   Aluno @relation(fields: [alunoRa], references: [ra], onDelete: Cascade)
-
-  oficinaId Int
-  oficina   Oficina @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([alunoRa, oficinaId, dataPresenca])
-  @@index([alunoRa])
-  @@index([oficinaId])
+  @@unique([dataPresenca, matriculaId])
 }

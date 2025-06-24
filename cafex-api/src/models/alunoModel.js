@@ -11,22 +11,22 @@ class AlunoModel {
     return prisma.aluno.findMany();
   }
 
-  static async getByRa(ra) {
+  static async getById(id) {
     return prisma.aluno.findUnique({
-      where: { ra },
+      where: { id },
     });
   }
 
-  static async update(ra, data) {
+  static async update(id, data) {
     return prisma.aluno.update({
-      where: { ra },
+      where: { id },
       data,
     });
   }
 
-  static async delete(ra) {
+  static async delete(id) {
     return prisma.aluno.delete({
-      where: { ra },
+      where: { id },
     });
   }
 }

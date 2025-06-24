@@ -1,5 +1,10 @@
 <template>
-  <v-dialog :model-value="show" @update:model-value="onDialogUpdate" width="50vw">
+  <v-dialog
+    :model-value="show"
+    @update:model-value="onDialogUpdate"
+    width="50vw"
+    class="presenca-modal"
+  >
     <v-card>
       <v-card-title class="d-flex align-center justify-space-between">
         <div>
@@ -37,6 +42,7 @@
                   dense
                   hide-details
                   :disabled="visualizacao"
+                  :data-cy="`select-status-presenca-${idx}`"
                   style="max-width: 200px; min-width: 120px; margin-left: 0"
                 />
               </v-col>
@@ -87,6 +93,13 @@ export default {
       },
       deep: true,
     },
+    alunos: {
+      handler() {
+        this.initPresencas()
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   methods: {
     onDialogUpdate(val) {
@@ -96,10 +109,16 @@ export default {
       this.$emit('update:show', false)
     },
     initPresencas() {
-      this.presencas = this.alunos.map((aluno, idx) => {
+      if (!this.alunos || !this.alunos.length) {
+        this.presencas = []
+        return
+      }
+      this.presencas = this.alunos.map((aluno) => {
         const found = this.presencasIniciais?.find((p) => p.ra === aluno.ra)
         return {
           ra: aluno.ra,
+          nome: aluno.nome,
+          matriculaId: aluno.matriculaId,
           status: found ? found.status : '',
         }
       })

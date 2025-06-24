@@ -1,4 +1,4 @@
-import PresencaService from "../services/presencaService.js";
+import PresencaService from '../services/presencaService.js';
 
 class PresencaController {
   static async createPresenca(req, res, next) {
@@ -14,7 +14,12 @@ class PresencaController {
     try {
       const { presencas } = req.body;
       if (!Array.isArray(presencas)) {
-        return res.status(400).json({ status: "erro", message: "presencas wrong format (not array)" });
+        return res
+          .status(400)
+          .json({
+            status: 'erro',
+            message: 'presencas wrong format (not array)',
+          });
       }
       const result = await PresencaService.createMultiplePresenca(presencas);
       res.status(201).json(result);
@@ -25,10 +30,9 @@ class PresencaController {
 
   static async listAllPresencas(req, res, next) {
     try {
-      const { alunoRa, oficinaId, dataInicio, dataFim } = req.query;
+      const { matriculaId, dataInicio, dataFim } = req.query;
       const filter = {
-        alunoRa: alunoRa ? parseInt(alunoRa) : undefined,
-        oficinaId: oficinaId ? parseInt(oficinaId) : undefined,
+        matriculaId: matriculaId ? parseInt(matriculaId) : undefined,
         dataInicio: dataInicio || undefined,
         dataFim: dataFim || undefined,
       };
@@ -44,7 +48,7 @@ class PresencaController {
       const { id } = req.params;
       const presenca = await PresencaService.getPresencaById(id);
       if (!presenca)
-        return res.status(404).json({ message: "Presença não encontrada" });
+        return res.status(404).json({ message: 'Presença não encontrada' });
       res.status(200).json(presenca);
     } catch (error) {
       next(error);

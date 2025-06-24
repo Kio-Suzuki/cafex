@@ -9,8 +9,12 @@ class PresencaModel {
     return prisma.presenca.findMany({
       where,
       include: {
-        aluno: true,
-        oficina: true,
+        matricula: {
+          include: {
+            aluno: true,
+            oficina: true,
+          },
+        },
       },
     });
   }

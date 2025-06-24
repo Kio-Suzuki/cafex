@@ -1,12 +1,10 @@
-import PresencaModel from "../models/presencaModel.js";
-import OficinaModel from "../models/oficinaModel.js";
-import AlunoModel from "../models/alunoModel.js";
-
-import logError from "../logs/logError.js";
+import PresencaModel from '../models/presencaModel.js';
+import MatriculaModel from '../models/matriculaModel.js';
+import logError from '../logs/logError.js';
 
 class PresencaService {
   static validateFields(data) {
-    const requiredFields = ["dataPresenca", "status", "alunoRa", "oficinaId"];
+    const requiredFields = ["dataPresenca", "status", "matriculaId"];
     for (const field of requiredFields) {
       if (!data[field]) {
         const error = new Error(
@@ -34,15 +32,14 @@ class PresencaService {
   static async createPresenca(data) {
     try {
       this.validateFields(data);
-
-      data.alunoRa = parseInt(data.alunoRa);
-      data.oficinaId = parseInt(data.oficinaId);
-
-      const oficina = await OficinaModel.getById(data.oficinaId);
-      if (!oficina) throw new Error("Oficina não encontrada.");
-
-      const aluno = await AlunoModel.getByRa(data.alunoRa);
-      if (!aluno) throw new Error("Aluno não encontrado.");
+      if (!data.matriculaId && data.alunoId && data.oficinaId) {
+        const matricula = await MatriculaModel.findByAlunoOficina(
+          data.alunoId,
+          data.oficinaId
+        );
+        if (!matricula) throw new Error("Matrícula não encontrada.");
+        data.matriculaId = matricula.id;
+      }
 
       return await PresencaModel.create(data);
     } catch (err) {
@@ -50,14 +47,14 @@ class PresencaService {
         (err.code === "P2002" &&
           err.meta &&
           err.meta.target &&
-          err.meta.target.includes("alunoRa_oficinaId_dataPresenca")) ||
+          err.meta.target.includes("dataPresenca_matriculaId")) ||
         (typeof err.message === "string" &&
           (err.message.includes("Unique constraint failed") ||
-            err.message.includes("alunoRa_oficinaId_dataPresenca") ||
+            err.message.includes("dataPresenca_matriculaId") ||
             err.message.includes("presença registrada")));
       if (isDuplicidade) {
         const error = new Error(
-          "Já existe uma presença registrada para este aluno, oficina e data."
+          "Já existe uma presença registrada para esta matrícula e data."
         );
         error.statusCode = 409;
         throw error;
@@ -72,10 +69,10 @@ class PresencaService {
     for (const data of presencas) {
       try {
         await this.createPresenca(data);
-        results.push({ alunoRa: data.alunoRa, status: "ok" });
+        results.push({ matriculaId: data.matriculaId, status: "ok" });
       } catch (err) {
         results.push({
-          alunoRa: data.alunoRa,
+          matriculaId: data.matriculaId,
           status: "erro",
           message: err.message,
         });
@@ -88,12 +85,8 @@ class PresencaService {
     try {
       const where = {};
 
-      if (filter.alunoRa) {
-        where.alunoRa = parseInt(filter.alunoRa);
-      }
-
-      if (filter.oficinaId) {
-        where.oficinaId = parseInt(filter.oficinaId);
+      if (filter.matriculaId) {
+        where.matriculaId = parseInt(filter.matriculaId);
       }
 
       if (filter.dataInicio || filter.dataFim) {
@@ -175,4 +168,5 @@ class PresencaService {
     }
   }
 }
+
 export default PresencaService;
